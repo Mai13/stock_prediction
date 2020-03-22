@@ -4,3 +4,4 @@ venv
 *.idea
 results
 *.png
+*.hdf5
