@@ -5,6 +5,7 @@ def main():
 
     stock_optimizer = StockOptimizer()
     stock_optimizer.run()
+    # TODO: base on ADAMADRINA
 
 
 if __name__ == '__main__':
