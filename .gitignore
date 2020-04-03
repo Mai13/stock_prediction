@@ -2,7 +2,7 @@ venv
 *.txt
 *.DS_Store
 *.idea
-results
+src/results/**
 *.png
 *.hdf5
 src/lab/__pycache__/*
