@@ -24,7 +24,11 @@ class CreateGraphs:
         shape_0 = data.shape[0]
         xmacd_ = shape_0 - last_days
 
+        data.sort_values(by=['date'], inplace=True)
+        print(len(data.index))
         dataset = data.iloc[-last_days:, :]
+        dataset.index = dataset['date']
+        print(len(dataset.index))
         x_ = range(3, dataset.shape[0])
         x_ = list(dataset.index)
 
@@ -52,7 +56,7 @@ class CreateGraphs:
             'Technical indicators for Goldman Sachs - last {} days.'.format(last_days))
         plt.ylabel('USD')
         plt.legend()
-
+        """
         # Plot second subplot
         plt.subplot(2, 1, 2)
         plt.title('MACD')
@@ -67,3 +71,5 @@ class CreateGraphs:
 
         plt.legend()
         plt.show()
+        """
+        plt.savefig(f'{self.path}/results/evolution_of_.png')

@@ -32,3 +32,5 @@ class StockOptimizer:
             data = self.technical_analysis.calculate(data)
             logger.info(f'Graph start here')
             self.graph_maker.plot_adjusted_prices(ticker, data)
+            self.graph_maker.plot_technical_indicators(data, 100)
+            logger.info(f'Technical analysis graphs')

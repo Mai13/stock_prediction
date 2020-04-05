@@ -7,11 +7,14 @@ class TechnicalIndicators:
         self.ma_short_period = 7
         self.ma_long_period = 21
         self.ema_coef = 0.5
+        self.num_of_std = 2
 
     def __moving_averange(self, data):
 
-        data['ma_short_period'] = data['close'].rolling(window=self.ma_short_period).mean()
-        data['ma_long_period'] = data['close'].rolling(window=self.ma_long_period).mean()
+        data['ma_short_period'] = data['close'].rolling(
+            window=self.ma_short_period).mean()
+        data['ma_long_period'] = data['close'].rolling(
+            window=self.ma_long_period).mean()
         return data
 
     def __exponential_moving_average(self, data):
@@ -21,23 +24,34 @@ class TechnicalIndicators:
 
     def __macd(self, data):
 
-        # TODO: SOLVE THIS INDICATOR
+        # TODO: SOLVE THIS INDICATOR, HAS AN OLD VERSION OF PANDAS
 
         # data['26ema'] = pd.ewm('close', halflife=self.ma_long_period)
         # data['26ema'] = data['close'].ewm(com=self.ema_coef).mean()
         # data['12ema'] = pd.ewm('close', halflife=self.ma_short_period)
         # data['26ema'] = pd.ewma(data['close'], span=self.ma_long_period)
         # data['12ema'] = pd.ewma(data['close'], span=self.ma_short_period)
+        data['12ema'] = data['close'].ewm(span=12, adjust=False).mean()
+        data['26ema'] = data['close'].ewm(span=26, adjust=False).mean()
         data['MACD'] = (data['12ema'] - data['26ema'])
-        data.drop(data['26ema'], inplace=True)
-        data.drop(data['12ema'], inplace=True)
+        print(data.columns)
+        print(data.head())
+        data.drop('26ema', axis=1, inplace=True)
+        data.drop('12ema', axis=1, inplace=True)
         return data
 
     def __bollinger_bands(self, data):
 
+        rolling_mean = data['close'].rolling(window=self.ma_long_period).mean()
+        rolling_std = data['close'].rolling(window=self.ma_long_period).std()
+        data['upper_band'] = rolling_mean + (rolling_std * self.num_of_std)
+        data['lower_band'] = rolling_mean - (rolling_std * self.num_of_std)
+
+        """
         data['20sd'] = pd.stats.moments.rolling_std(data['close'], self.ma_long_period)
         data['upper_band'] = data['ma_long_period'] + (data['20sd'] * 2)
         data['lower_band'] = data['ma_long_period'] - (data['20sd'] * 2)
+        """
         return data
 
     def __momentum(self, data):
