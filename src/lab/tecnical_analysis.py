@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 class TechnicalIndicators:
@@ -34,8 +35,8 @@ class TechnicalIndicators:
         data['12ema'] = data['close'].ewm(span=12, adjust=False).mean()
         data['26ema'] = data['close'].ewm(span=26, adjust=False).mean()
         data['MACD'] = (data['12ema'] - data['26ema'])
-        print(data.columns)
-        print(data.head())
+        # print(data.columns)
+        # print(data.head())
         data.drop('26ema', axis=1, inplace=True)
         data.drop('12ema', axis=1, inplace=True)
         return data
@@ -54,9 +55,36 @@ class TechnicalIndicators:
         """
         return data
 
-    def __momentum(self, data):
+    def __rsi(self, data):
 
-        data['momentum'] = data['close'] - 1
+        # short period
+        delta = data['close'].diff().dropna()
+        u = delta * 0
+        d = u.copy()
+        u[delta > 0] = delta[delta > 0]
+        d[delta < 0] = -delta[delta < 0]
+        u[u.index[self.ma_short_period - 1]] = np.mean(u[:self.ma_short_period])  # first value is sum of avg gains
+        u = u.drop(u.index[:(self.ma_short_period - 1)])
+        d[d.index[self.ma_short_period - 1]] = np.mean(d[:self.ma_short_period])  # first value is sum of avg losses
+        d = d.drop(d.index[:(self.ma_short_period - 1)])
+        rs = pd.stats.moments.ewma(u, com=self.ma_short_period - 1, adjust=False) / \
+                pd.stats.moments.ewma(d, com=self.ma_short_period - 1, adjust=False)
+        data['rsi_short'] = 100 - 100 / (1 + rs)
+
+        # long period
+        delta = data['close'].diff().dropna()
+        u = delta * 0
+        d = u.copy()
+        u[delta > 0] = delta[delta > 0]
+        d[delta < 0] = -delta[delta < 0]
+        u[u.index[self.ma_long_period - 1]] = np.mean(u[:self.ma_long_period])  # first value is sum of avg gains
+        u = u.drop(u.index[:(self.ma_long_period - 1)])
+        d[d.index[self.ma_long_period - 1]] = np.mean(d[:self.ma_long_period])  # first value is sum of avg losses
+        d = d.drop(d.index[:(self.ma_long_period - 1)])
+        rs = pd.stats.moments.ewma(u, com=self.ma_long_period - 1, adjust=False) / \
+             pd.stats.moments.ewma(d, com=self.ma_long_period - 1, adjust=False)
+        data['rsi_long'] = 100 - 100 / (1 + rs)
+
         return data
 
     def calculate(self, data):
@@ -65,5 +93,5 @@ class TechnicalIndicators:
         data = self.__exponential_moving_average(data)
         data = self.__macd(data)
         data = self.__bollinger_bands(data)
-        data = self.__momentum(data)
+        data = self.__rsi(data)
         return data
