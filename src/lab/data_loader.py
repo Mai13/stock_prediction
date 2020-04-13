@@ -28,12 +28,14 @@ class DataLoader:
         adjusted_data['date'] = pd.to_datetime(adjusted_data['date'])
         return adjusted_data
 
-    def __transform_data_for_nn(self):
+    def __transform_data_for_nn(self, data_array):
 
-        pass
+        print(data_array[:, 1])
+        return data_array
 
     # Todo: delete all the tickers that we wont be using
     def transform(self, adjusted_data, neural_net):
         data_array = adjusted_data.values
-
+        if neural_net:
+            data_array = self.__transform_data_for_nn()
         return data_array
