@@ -32,6 +32,11 @@ class DataLoader:
             test_and_val, test_size=0.5, random_state=1, shuffle=False)
         return data_array
 
+    def __scale(self, data):
+        data = MinMaxScaler().fit_transform(data.reshape(-1, 1))
+        data = StandardScaler().fit_transform(data)
+        return data
+
     # Todo: delete all the tickers that we wont be using
     def transform(self, adjusted_data, neural_net, number_of_past_points):
         adjusted_data.date = [int(one_date.strftime("%s"))
@@ -39,7 +44,10 @@ class DataLoader:
         adjusted_data.drop('symbol', axis=1, inplace=True)
         adjusted_data.sort_values(by=['date'], inplace=True, ascending=False)
         adjusted_data.dropna(inplace=True)
-        for column in
+        for column_pos in range(1, adjusted_data.shape[1]):
+            # print(adjusted_data[:, column_pos])
+            # print(self.__scale(adjusted_data[:, column_pos].values))
+            adjusted_data.iloc[:, column_pos] = self.__scale(adjusted_data.iloc[:, column_pos].values)
         print(adjusted_data.columns)
         data_array = adjusted_data.values
         if neural_net:
