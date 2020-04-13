@@ -9,7 +9,7 @@ logger = create_logger(f'{path.parent}/results', 'INFO')
 
 def main():
 
-    stock_optimizer = StockOptimizer(number_of_tickers=10)
+    stock_optimizer = StockOptimizer(number_of_tickers=10, train=True)
     stock_optimizer.run()
 
 

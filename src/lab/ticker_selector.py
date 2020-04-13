@@ -5,7 +5,7 @@ import pathlib
 class ChooseTicker:
 
     def __init__(self):
-        random.seed(1995)
+        random.seed(195)
         self.path = pathlib.Path(__file__).parent.parent.parent.absolute()
         print(self.path)
 

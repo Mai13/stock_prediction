@@ -49,25 +49,29 @@ for epoch in range(epochs):
     mse_adam_val.append(mean(val_mse_for_mean))
     loss_adam_val.append(loss_val)
   print(f'training epoch {epoch}: loss {loss}')
-  
+
   epochs_adam.append(epoch)
 """
+
 
 class Net(nn.Module):
 
     def __init__(self):
-      super().__init__()
-      self.fc1 = nn.Linear(10, 10) # number_of_past_points
-      self.fc2 = nn.Linear(10, 10)
-      self.fc3 = nn.Linear(10, 10)
-      self.fc4 = nn.Linear(10, 1)
+        super().__init__()
+        self.fc1 = nn.Linear(10, 10)  # number_of_past_points
+        self.fc2 = nn.Linear(10, 10)
+        self.fc3 = nn.Linear(10, 10)
+        self.fc4 = nn.Linear(10, 1)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
         x = self.fc4(x)
-        return F.relu(x)
+        return x
 
+
+class FeedForwardNN():
+    pass
 
 # create test

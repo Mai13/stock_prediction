@@ -97,7 +97,7 @@ class TechnicalIndicators:
         return data
 
     def calculate(self, data):
-
+        data.sort_values(by=['date'], inplace=True)
         data = self.__moving_averange(data)
         data = self.__exponential_moving_average(data)
         data = self.__macd(data)
