@@ -73,3 +73,12 @@ class CreateGraphs:
         plt.show()
         """
         plt.savefig(f'{self.path}/results/evolution_of_.png')
+
+    def plot_train_test_val(self, ticker, train, test, val):
+
+        plt.figure(figsize=(20, 10))
+        plt.plot(train[:, 0], train[0:, 4], legend='Training points', c='blue')
+        plt.plot(test[:, 0], test[0:, 4], legend='Testing points', c='orange')
+        plt.plot(val[:, 0], val[0:, 4], legend='Testing points', c='yellow')
+        plt.savefig(f'{self.path}/results/train_test_val_{ticker}.png')
+        plt.close()
