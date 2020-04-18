@@ -39,8 +39,8 @@ class StockOptimizer:
             # que hacer esto bien
             logger.info(f'Technical analysis graphs')
 
-            train, test, validation = self.data_loader.transform(
+            train, test, validation, train_graph, test_graph, validation_graph = self.data_loader.transform(
                 data,
                 neural_net=True,
                 number_of_past_points=self.number_of_past_points)
-            self.graph_maker.plot_train_test_val(ticker, train, test, validation)
+            self.graph_maker.plot_train_test_val(ticker, train_graph, test_graph, validation_graph)

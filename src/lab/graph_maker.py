@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import logging
 import pathlib
-import pandas as pd
+import numpy as np
 
 logger = logging.getLogger('Stock Optimizer')
 
@@ -76,9 +76,31 @@ class CreateGraphs:
 
     def plot_train_test_val(self, ticker, train, test, val):
 
+        train_dates = np.empty((0, 1))
+        train_closing_prices = np.empty((0, 1))
+
+        for X, y in train:
+            train_dates = np.append(train_dates, X[-1])
+            train_closing_prices = np.append(train_closing_prices, y)
+
+        test_dates = np.empty((0, 1))
+        test_closing_prices = np.empty((0, 1))
+
+        for X, y in test:
+            test_dates = np.append(test_dates, X[-1])
+            test_closing_prices = np.append(test_closing_prices, y)
+
+        val_dates = np.empty((0, 1))
+        val_closing_prices = np.empty((0, 1))
+
+        for X, y in val:
+            val_dates = np.append(val_dates, X[-1])
+            val_closing_prices = np.append(val_closing_prices, y)
+
         plt.figure(figsize=(20, 10))
-        plt.plot(train[:, 0], train[0:, 4], legend='Training points', c='blue')
-        plt.plot(test[:, 0], test[0:, 4], legend='Testing points', c='orange')
-        plt.plot(val[:, 0], val[0:, 4], legend='Testing points', c='yellow')
+        plt.plot(train_dates, train_closing_prices, label='Training points', c='blue')
+        plt.plot(test_dates, test_closing_prices, label='Testing points', c='orange')
+        plt.plot(val_dates, val_closing_prices, label='Validation points', c='yellow')
+        plt.legend(loc="upper left")
         plt.savefig(f'{self.path}/results/train_test_val_{ticker}.png')
         plt.close()
