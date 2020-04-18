@@ -1,6 +1,5 @@
 import pathlib
 import logging
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
@@ -16,7 +15,7 @@ class DataLoader:
     def __init__(self):
         self.path = pathlib.Path(__file__).parent.parent.absolute()
 
-    def load(self, ticker):  # Todo: choose between price and adjusted price
+    def load(ticker):  # Todo: choose between price and adjusted price
         # read line by line and just load the necessary arrays
         adjusted_data = pd.read_csv(
             f'{path}/stock_market_historical_data/prices-split-adjusted.csv')
