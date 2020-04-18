@@ -40,7 +40,16 @@ class StockOptimizer:
             logger.info(f'Technical analysis graphs')
 
             train, test, validation, train_graph, test_graph, validation_graph = self.data_loader.transform(
-                data,
-                neural_net=True,
-                number_of_past_points=self.number_of_past_points)
-            self.graph_maker.plot_train_test_val(ticker, train_graph, test_graph, validation_graph)
+                data, neural_net=True, number_of_past_points=self.number_of_past_points)
+            self.graph_maker.plot_train_test_val(
+                ticker, train_graph, test_graph, validation_graph)
+
+            """
+            training_parameters = {'model': 'FeedForwardNerualNet',
+                                   'trainig': True | False,
+                                   'parameters': {'Optimizer': 'Adam'/'Adagrad',
+                                                  'learning_rate': [0.1, 0.01],
+                                                  'epochs': [10, 40, 80, 100]
+                                                }
+            }
+            """

@@ -15,7 +15,7 @@ class DataLoader:
     def __init__(self):
         self.path = pathlib.Path(__file__).parent.parent.absolute()
 
-    def load(ticker):  # Todo: choose between price and adjusted price
+    def load(self, ticker):  # Todo: choose between price and adjusted price
         # read line by line and just load the necessary arrays
         adjusted_data = pd.read_csv(
             f'{path}/stock_market_historical_data/prices-split-adjusted.csv')
