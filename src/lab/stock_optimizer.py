@@ -2,6 +2,7 @@ from data_loader import DataLoader
 from ticker_selector import ChooseTicker
 from graph_maker import CreateGraphs
 from tecnical_analysis import TechnicalIndicators
+from feed_forward_nn import FeedForwardNN
 import logging
 
 logger = logging.getLogger('Stock Optimizer')
@@ -17,9 +18,6 @@ class StockOptimizer:
         self.technical_analysis = TechnicalIndicators()
         self.number_of_past_points = 7
         self.is_train_necesry = train  # boolean
-        self.train_set = 0.7
-        self.validation_set = 0.15
-        self.test_set = 0.15
 
     def run(self):
 
@@ -43,13 +41,10 @@ class StockOptimizer:
                 data, neural_net=True, number_of_past_points=self.number_of_past_points)
             self.graph_maker.plot_train_test_val(
                 ticker, train_graph, test_graph, validation_graph)
-
-            """
-            training_parameters = {'model': 'FeedForwardNerualNet',
-                                   'trainig': True | False,
-                                   'parameters': {'Optimizer': 'Adam'/'Adagrad',
-                                                  'learning_rate': [0.1, 0.01],
-                                                  'epochs': [10, 40, 80, 100]
-                                                }
-            }
-            """
+            model = FeedForwardNN(
+                dimension_of_first_layer=self.number_of_past_points * train[0][0].shape[1],
+                number_of_epoch=10,
+                learning_rate_adam=0.01,
+                ticker=ticker)
+            predictions, true_values, train_loss, val_loss = model.run(
+                train, validation, test)

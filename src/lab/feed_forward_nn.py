@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import logging
 import pathlib
+import torch.optim as optim
 
 logger = logging.getLogger('Feed Forward Neural Net')
 
@@ -12,10 +13,12 @@ class Net(nn.Module):
 
     def __init__(self, dimension_of_first_layer):
         super().__init__()
-        self.fc1 = nn.Linear(dimension_of_first_layer, 10)  # number_of_past_points
-        self.fc2 = nn.Linear(10, 10)
-        self.fc3 = nn.Linear(10, 10)
-        self.fc4 = nn.Linear(10, 1)
+        self.fc1 = nn.Linear(
+            dimension_of_first_layer,
+            100)  # number_of_past_points
+        self.fc2 = nn.Linear(100, 100)
+        self.fc3 = nn.Linear(100, 100)
+        self.fc4 = nn.Linear(100, 1)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
@@ -27,13 +30,17 @@ class Net(nn.Module):
 
 class FeedForwardNN:
 
-    def __init__(self, number_of_previous_points, number_of_epoch, dataset, learning_rate_adam):
-        self.number_of_previous_points = number_of_previous_points
+    def __init__(
+            self,
+            dimension_of_first_layer,
+            number_of_epoch,
+            learning_rate_adam,
+            ticker):
+        self.ticker = ticker
         self.number_of_epoch = number_of_epoch
-        self.dataset = dataset
-        self.net = Net(self.number_of_previous_points)
+        self.net = Net(dimension_of_first_layer)
         self.lr_adam = learning_rate_adam
-        self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model/'
+        self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model'
 
     def __train(self, optimizer, criterion, train, validation):
 
@@ -44,7 +51,8 @@ class FeedForwardNN:
             for data in train:
                 X, y = data
                 optimizer.zero_grad()
-                output = self.net(torch.Tensor(X))
+                # print(torch.Tensor(X.flatten()).shape)
+                output = self.net(torch.Tensor(X.flatten()))
                 loss = criterion(output, torch.Tensor(np.array([y])))
                 loss_accum += loss.data.item()
                 loss.backward()
@@ -53,10 +61,12 @@ class FeedForwardNN:
             loss_accum_val = 0.0
             for val_data in validation:
                 val_x, val_y = val_data
-                output = self.net(torch.Tensor(val_x))
-                loss_accum_val += criterion(output, torch.Tensor(np.array([val_y]))).data.item()
+                output = self.net(torch.Tensor(val_x.flatten()))
+                loss_accum_val += criterion(output,
+                                            torch.Tensor(np.array([val_y]))).data.item()
 
-            logger.info(f'Epoch:, {epoch}, "train loss:", {loss_accum/len(train)}, "val loss:", {loss_accum_val/len(validation)}')
+            logger.info(
+                f'Epoch:, {epoch}, "train loss:", {loss_accum/len(train)}, "val loss:", {loss_accum_val/len(validation)}')
             train_loss.append(loss_accum / len(train))
             val_loss.append(loss_accum_val / len(validation))
 
@@ -64,12 +74,16 @@ class FeedForwardNN:
                       'state_dict': self.net.state_dict(),
                       'optimizer': optimizer.state_dict()}
 
-        torch.save(checkpoint, f'{self.model_path}/{self.dataset}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
+        torch.save(
+            checkpoint,
+            f'{self.model_path}/{self.ticker}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
         return train_loss, val_loss
 
     def __load_checkpoint(self):
 
-        checkpoint = torch.load(f'{self.model_path}/{self.dataset}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
+        print(f'{self.model_path}/{self.ticker}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
+        checkpoint = torch.load(
+            f'{self.model_path}/{self.ticker}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
         model = checkpoint['model']
         model.load_state_dict(checkpoint['state_dict'])
         for parameter in model.parameters():
@@ -86,10 +100,25 @@ class FeedForwardNN:
 
         for test_data in test:
             X, y = test_data
-            output = trained_model(torch.Tensor(X))
+            output = trained_model(torch.Tensor(X.flatten()))
             predictions.append(output)
             true_values.append(y)
 
         return predictions, true_values
+
+    def run(self, train, val, test):
+
+        logger.info(
+            f'Starts Training ADAM with learning_rate {self.lr_adam}, epochs {self.number_of_epoch}')
+        train_loss, val_loss = self.__train(optimizer=optim.Adam(self.net.parameters(), lr=self.lr_adam),  # Aqui tendrias que cambiar el optimizer
+                                            criterion=torch.nn.MSELoss(),
+                                            train=train,
+                                            validation=val)
+        logger.info(f'Ends Training ADAM')
+        logger.info(f'Starts Test')
+        predictions, true_values = self.__test(test)
+        logger.info(f'Ends Test')
+
+        return predictions, true_values, train_loss, val_loss
 
 # create test

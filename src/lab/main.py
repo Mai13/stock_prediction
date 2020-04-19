@@ -6,6 +6,16 @@ import pathlib
 path = pathlib.Path(__file__).parent.absolute()
 logger = create_logger(f'{path.parent}/results', 'INFO')
 
+"""
+            training_parameters = {'model': 'FeedForwardNerualNet',
+                                   'trainig': True | False,
+                                   'parameters': {'Optimizer': 'Adam'/'Adagrad',
+                                                  'learning_rate': [0.1, 0.01],
+                                                  'epochs': [10, 40, 80, 100]
+                                                }
+            }
+            """
+
 
 def main():
 

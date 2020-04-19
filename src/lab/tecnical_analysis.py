@@ -48,11 +48,6 @@ class TechnicalIndicators:
         data['upper_band'] = rolling_mean + (rolling_std * self.num_of_std)
         data['lower_band'] = rolling_mean - (rolling_std * self.num_of_std)
 
-        """
-        data['20sd'] = pd.stats.moments.rolling_std(data['close'], self.ma_long_period)
-        data['upper_band'] = data['ma_long_period'] + (data['20sd'] * 2)
-        data['lower_band'] = data['ma_long_period'] - (data['20sd'] * 2)
-        """
         return data
 
     def __rsi(self, data):
