@@ -12,8 +12,7 @@ logger = create_logger(f'{path.parent}/results', 'INFO')
                                    'parameters': {'Optimizer': 'Adam'/'Adagrad',
                                                   'learning_rate': [0.1, 0.01],
                                                   'epochs': [10, 40, 80, 100]
-                                                }
-            }
+                                                }}
             """
 
 
