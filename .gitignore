@@ -7,3 +7,4 @@ src/results/**
 *.hdf5
 src/lab/__pycache__/*
 /src/model
+*.pth

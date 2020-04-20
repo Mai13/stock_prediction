@@ -98,9 +98,73 @@ class CreateGraphs:
             val_closing_prices = np.append(val_closing_prices, y)
 
         plt.figure(figsize=(20, 10))
-        plt.plot(train_dates, train_closing_prices, label='Training points', c='blue')
-        plt.plot(test_dates, test_closing_prices, label='Testing points', c='orange')
-        plt.plot(val_dates, val_closing_prices, label='Validation points', c='yellow')
+        plt.plot(
+            train_dates,
+            train_closing_prices,
+            label='Training points',
+            c='blue')
+        plt.plot(
+            test_dates,
+            test_closing_prices,
+            label='Testing points',
+            c='orange')
+        plt.plot(
+            val_dates,
+            val_closing_prices,
+            label='Validation points',
+            c='yellow')
         plt.legend(loc="upper left")
         plt.savefig(f'{self.path}/results/train_test_val_{ticker}.png')
+        plt.close()
+
+    def plot_overfitting_graph(
+            self,
+            train_loss,
+            val_loss,
+            epochs,
+            optimizer,
+            learning_rate,
+            ticker):
+
+        if train_loss and val_loss:
+
+            plt.figure(figsize=(20, 10))
+            plt.plot(
+                range(epochs),
+                train_loss,
+                label='Training points',
+                c='blue')
+            plt.plot(
+                range(epochs),
+                val_loss,
+                label='Validation points',
+                c='orange')
+            plt.savefig(
+                f'{self.path}/results/overfitting_graph_{ticker}_{optimizer}_{epochs}_{learning_rate}.png')
+            plt.close()
+
+    def plot_test_graph(
+            self,
+            predictions,
+            true_values,
+            epochs,
+            optimizer,
+            learning_rate,
+            ticker):
+
+        plt.figure(figsize=(20, 10))
+        plt.plot(
+            range(
+                len(true_values)),
+            true_values,
+            label='Training points',
+            c='blue')
+        plt.plot(
+            range(
+                len(predictions)),
+            predictions,
+            label='Validation points',
+            c='orange')
+        plt.savefig(
+            f'{self.path}/results/test_graph_{ticker}_{optimizer}_{epochs}_{learning_rate}.png')
         plt.close()

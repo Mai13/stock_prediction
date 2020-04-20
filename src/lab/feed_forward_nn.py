@@ -5,6 +5,7 @@ import numpy as np
 import logging
 import pathlib
 import torch.optim as optim
+from graph_maker import CreateGraphs
 
 logger = logging.getLogger('Feed Forward Neural Net')
 
@@ -35,6 +36,7 @@ class FeedForwardNN:
         self.ticker = ticker
         self.net = Net(dimension_of_first_layer)
         self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model'
+        self.graphing_module = CreateGraphs()
 
     def __train(
             self,
@@ -145,5 +147,7 @@ class FeedForwardNN:
                     predictions, true_values = self.__test(
                         test, optimizer_name, learning_rate, epoch)
                     logger.info(f'Ends Test')
+                    self.graphing_module.plot_overfitting_graph(train_loss, val_loss, epoch, optimizer_name, learning_rate, self.ticker)
+                    self.graphing_module.plot_test_graph(predictions, true_values, epoch, optimizer_name, learning_rate, self.ticker)
 
         return predictions, true_values, train_loss, val_loss
