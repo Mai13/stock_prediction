@@ -10,14 +10,14 @@ logger = logging.getLogger('Stock Optimizer')
 
 class StockOptimizer:
 
-    def __init__(self, number_of_tickers, train):
+    def __init__(self, number_of_tickers, models_and_parameters):
         self.number_of_tickers = number_of_tickers
         self.data_loader = DataLoader()
         self.choose_ticker = ChooseTicker()
         self.graph_maker = CreateGraphs()
         self.technical_analysis = TechnicalIndicators()
         self.number_of_past_points = 7
-        self.is_train_necesry = train  # boolean
+        self.models_and_parameters = models_and_parameters
 
     def run(self):
 
@@ -41,10 +41,16 @@ class StockOptimizer:
                 data, neural_net=True, number_of_past_points=self.number_of_past_points)
             self.graph_maker.plot_train_test_val(
                 ticker, train_graph, test_graph, validation_graph)
-            model = FeedForwardNN(
-                dimension_of_first_layer=self.number_of_past_points * train[0][0].shape[1],
-                number_of_epoch=10,
-                learning_rate_adam=0.01,
-                ticker=ticker)
-            predictions, true_values, train_loss, val_loss = model.run(
-                train, validation, test)
+
+            for position, model_name in enumerate([element.get('model') for element in self.models_and_parameters]):
+
+                if model_name == 'feed_forward_neural_net':
+
+                    model = FeedForwardNN(
+                        dimension_of_first_layer=self.number_of_past_points * train[0][0].shape[1],
+                        ticker=ticker,
+                    )
+                    predictions, true_values, train_loss, val_loss = model.run(train=train,
+                                                                               val=validation,
+                                                                               test=test,
+                                                                               model_parameters=self.models_and_parameters[position])

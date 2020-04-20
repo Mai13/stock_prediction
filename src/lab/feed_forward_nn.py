@@ -30,23 +30,25 @@ class Net(nn.Module):
 
 class FeedForwardNN:
 
-    def __init__(
-            self,
-            dimension_of_first_layer,
-            number_of_epoch,
-            learning_rate_adam,
-            ticker):
+    def __init__(self, dimension_of_first_layer, ticker):
+
         self.ticker = ticker
-        self.number_of_epoch = number_of_epoch
         self.net = Net(dimension_of_first_layer)
-        self.lr_adam = learning_rate_adam
         self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model'
 
-    def __train(self, optimizer, criterion, train, validation):
+    def __train(
+            self,
+            optimizer,
+            criterion,
+            train,
+            validation,
+            epochs,
+            learning_rate,
+            optimizer_name):
 
         train_loss = []
         val_loss = []
-        for epoch in range(self.number_of_epoch):
+        for epoch in range(epochs):
             loss_accum = 0.0
             for data in train:
                 X, y = data
@@ -76,14 +78,13 @@ class FeedForwardNN:
 
         torch.save(
             checkpoint,
-            f'{self.model_path}/{self.ticker}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
+            f'{self.model_path}/{self.ticker}_optimizer_{optimizer_name}_learning_rate_{learning_rate}_epochs_{epochs}.pth')
         return train_loss, val_loss
 
-    def __load_checkpoint(self):
+    def __load_checkpoint(self, optimizer, learning_rate, epoch):
 
-        print(f'{self.model_path}/{self.ticker}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
         checkpoint = torch.load(
-            f'{self.model_path}/{self.ticker}_learning_rate_{self.lr_adam}_epochs_{self.number_of_epoch}.pth')
+            f'{self.model_path}/{self.ticker}_optimizer_{optimizer}_learning_rate_{learning_rate}_epochs_{epoch}.pth')
         model = checkpoint['model']
         model.load_state_dict(checkpoint['state_dict'])
         for parameter in model.parameters():
@@ -92,9 +93,9 @@ class FeedForwardNN:
         model.eval()
         return model
 
-    def __test(self, test):
+    def __test(self, test, optimizer, learning_rate, epoch):
 
-        trained_model = self.__load_checkpoint()
+        trained_model = self.__load_checkpoint(optimizer, learning_rate, epoch)
         predictions = []
         true_values = []
 
@@ -106,19 +107,43 @@ class FeedForwardNN:
 
         return predictions, true_values
 
-    def run(self, train, val, test):
+    def run(self, train, val, test, model_parameters):
 
-        logger.info(
-            f'Starts Training ADAM with learning_rate {self.lr_adam}, epochs {self.number_of_epoch}')
-        train_loss, val_loss = self.__train(optimizer=optim.Adam(self.net.parameters(), lr=self.lr_adam),  # Aqui tendrias que cambiar el optimizer
-                                            criterion=torch.nn.MSELoss(),
-                                            train=train,
-                                            validation=val)
-        logger.info(f'Ends Training ADAM')
-        logger.info(f'Starts Test')
-        predictions, true_values = self.__test(test)
-        logger.info(f'Ends Test')
+        for optimizer_name in model_parameters.get(
+                'parameters').get('optimizer'):
+            for epoch in model_parameters.get('parameters').get('epochs'):
+                for learning_rate in model_parameters.get(
+                        'parameters').get('learning_rate'):
+                    if model_parameters.get('training'):
+                        logger.info(
+                            f'Starts Training: learning_rate {learning_rate}, epochs {epoch}, optimzer {optimizer_name}')
+                        if optimizer_name == 'Adam':
+                            train_loss, val_loss = self.__train(
+                                optimizer=optim.Adam(self.net.parameters(), lr=learning_rate),
+                                criterion=torch.nn.MSELoss(),
+                                train=train,
+                                validation=val,
+                                epochs=epoch,
+                                learning_rate=learning_rate,
+                                optimizer_name=optimizer_name
+                            )
+                        elif optimizer_name == 'Adagrad':
+                            train_loss, val_loss = self.__train(
+                                optimizer=optim.Adagrad(self.net.parameters(), lr=learning_rate),
+                                criterion=torch.nn.MSELoss(),
+                                train=train,
+                                validation=val,
+                                epochs=epoch,
+                                learning_rate=learning_rate,
+                                optimizer_name=optimizer_name
+                            )
+                        logger.info(f'Ends Training')
+                    else:
+                        train_loss, val_loss = None, None
+                    logger.info(
+                        f'Starts Test:  learning_rate {learning_rate}, epochs {epoch}, optimzer {optimizer_name}')
+                    predictions, true_values = self.__test(
+                        test, optimizer_name, learning_rate, epoch)
+                    logger.info(f'Ends Test')
 
         return predictions, true_values, train_loss, val_loss
-
-# create test

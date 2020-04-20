@@ -6,19 +6,21 @@ import pathlib
 path = pathlib.Path(__file__).parent.absolute()
 logger = create_logger(f'{path.parent}/results', 'INFO')
 
-"""
-            training_parameters = {'model': 'FeedForwardNerualNet',
-                                   'trainig': True | False,
-                                   'parameters': {'Optimizer': 'Adam'/'Adagrad',
-                                                  'learning_rate': [0.1, 0.01],
-                                                  'epochs': [10, 40, 80, 100]
-                                                }}
-            """
+feed_forward = {
+    'model': 'feed_forward_neural_net',
+    'training': True,
+    'parameters': {
+        'optimizer': ['Adam', 'Adagrad'],
+        'learning_rate': [0.1, 0.01, 0.001, 0.0001],
+        'epochs': [10, 30, 50, 70]
+    }
+}
+models = [feed_forward]
 
 
 def main():
 
-    stock_optimizer = StockOptimizer(number_of_tickers=10, train=True)
+    stock_optimizer = StockOptimizer(number_of_tickers=10, models_and_parameters=models)
     stock_optimizer.run()
 
 
