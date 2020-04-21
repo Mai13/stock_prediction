@@ -24,7 +24,8 @@ class StockOptimizer:
         logger.info('Select tickers')
         tickers = self.choose_ticker.random_tickers(self.number_of_tickers)
         logger.info(f'The selected tickers are {tickers}')
-        for ticker in tickers:
+        # for ticker in tickers:
+        for ticker in ['MCHP']:
             logger.info(f'Starting with ticker {ticker}')
             data = self.data_loader.load(ticker)
             self.graph_maker.plot_adjusted_prices(ticker, data)

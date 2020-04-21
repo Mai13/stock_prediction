@@ -17,10 +17,10 @@ class Net(nn.Module):
         super().__init__()
         self.fc1 = nn.Linear(
             dimension_of_first_layer,
-            100)  # number_of_past_points
-        self.fc2 = nn.Linear(100, 100)
-        self.fc3 = nn.Linear(100, 100)
-        self.fc4 = nn.Linear(100, 1)
+            10)  # number_of_past_points
+        self.fc2 = nn.Linear(10, 10)
+        # self.fc3 = nn.Linear(10, 10)
+        self.fc4 = nn.Linear(10, 1)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))

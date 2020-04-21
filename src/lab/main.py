@@ -12,7 +12,7 @@ feed_forward = {
     'parameters': {
         'optimizer': ['Adam', 'Adagrad'],
         'learning_rate': [0.1, 0.01, 0.001, 0.0001],
-        'epochs': [10, 30, 50, 70]
+        'epochs': [3, 10, 30, 50, 70]
     }
 }
 models = [feed_forward]
@@ -20,7 +20,9 @@ models = [feed_forward]
 
 def main():
 
-    stock_optimizer = StockOptimizer(number_of_tickers=10, models_and_parameters=models)
+    stock_optimizer = StockOptimizer(
+        number_of_tickers=10,
+        models_and_parameters=models)
     stock_optimizer.run()
 
 
