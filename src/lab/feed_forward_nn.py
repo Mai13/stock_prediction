@@ -6,6 +6,7 @@ import logging
 import pathlib
 import torch.optim as optim
 from graph_maker import CreateGraphs
+from sklearn.metrics import mean_squared_error
 
 logger = logging.getLogger('Feed Forward Neural Net')
 
@@ -109,7 +110,22 @@ class FeedForwardNN:
 
         return predictions, true_values
 
+    def __get_trend(self, true_values, predictions):
+        ratio = 0
+        for pos in range(len(true_values) - 1):
+
+            real_diff = true_values[pos] - true_values[pos + 1]
+            prediction_diff = true_values[pos] - predictions[pos + 1]
+
+            if real_diff * prediction_diff > 0:
+                ratio += 1
+
+        return ratio / len(true_values) - 1
+
     def run(self, train, val, test, model_parameters):
+
+        mse = 0
+        best_parameters = {}
 
         for optimizer_name in model_parameters.get(
                 'parameters').get('optimizer'):
@@ -147,7 +163,18 @@ class FeedForwardNN:
                     predictions, true_values = self.__test(
                         test, optimizer_name, learning_rate, epoch)
                     logger.info(f'Ends Test')
-                    self.graphing_module.plot_overfitting_graph(train_loss, val_loss, epoch, optimizer_name, learning_rate, self.ticker)
-                    self.graphing_module.plot_test_graph(predictions, true_values, epoch, optimizer_name, learning_rate, self.ticker)
-
-        return predictions, true_values, train_loss, val_loss
+                    self.graphing_module.plot_overfitting_graph(
+                        train_loss, val_loss, epoch, optimizer_name, learning_rate, self.ticker)
+                    self.graphing_module.plot_test_graph(
+                        predictions, true_values, epoch, optimizer_name, learning_rate, self.ticker)
+                    # Todo: check overfitting with: train_loss, val_loss
+                    current_mse = mean_squared_error(true_values, predictions)
+                    if current_mse < mse:
+                        best_parameters = {
+                            'learning_rate': learning_rate,
+                            'epochs': epoch,
+                            'optimizer': optimizer_name,
+                        }
+                    percenatge_of_guess_in_trend = self.__get_trend(
+                        true_values, predictions)
+        return best_parameters, mse, percenatge_of_guess_in_trend

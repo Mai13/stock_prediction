@@ -50,7 +50,5 @@ class StockOptimizer:
                         dimension_of_first_layer=self.number_of_past_points * train[0][0].shape[1],
                         ticker=ticker,
                     )
-                    predictions, true_values, train_loss, val_loss = model.run(train=train,
-                                                                               val=validation,
-                                                                               test=test,
-                                                                               model_parameters=self.models_and_parameters[position])
+                    best_parameters, mse, trend_ratio = model.run(train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
+                    logger.info(f'The best scenario for a Feed Forward Neural Net is {best_parameters}, mse: {mse}, ratio of trend {trend_ratio*100}')
