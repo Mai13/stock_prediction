@@ -3,6 +3,10 @@ from ticker_selector import ChooseTicker
 from graph_maker import CreateGraphs
 from tecnical_analysis import TechnicalIndicators
 from feed_forward_nn import FeedForwardNN
+from random_forest import RandomForest
+from xgboost import XGBoost
+from svm import SVM
+from arima import Arima
 import logging
 
 logger = logging.getLogger('Stock Optimizer')
@@ -29,19 +33,11 @@ class StockOptimizer:
             logger.info(f'Starting with ticker {ticker}')
             data = self.data_loader.load(ticker)
             self.graph_maker.plot_adjusted_prices(ticker, data)
-            # logger.info(f'Adjusted data is loaded and graphed, there are {data.shape[0]} data points')
-            # logger.info(f'Divided in Train : {data.shape[0]*self.train_set}, Validation : {data.shape[0]*self.validation_set}, test : {data.shape[0]*self.test_set}')
             data = self.technical_analysis.calculate(data)
-            # logger.info(f'Graph start here')
-            # self.graph_maker.plot_adjusted_prices(ticker, data) # TODO: hay que hacer esto bien
-            # self.graph_maker.plot_technical_indicators(data, 100) # TODO: hay
-            # que hacer esto bien
             logger.info(f'Technical analysis graphs')
-
             train, test, validation, train_graph, test_graph, validation_graph = self.data_loader.transform(
-                data, neural_net=True, number_of_past_points=self.number_of_past_points)
-            self.graph_maker.plot_train_test_val(
-                ticker, train_graph, test_graph, validation_graph)
+                data, number_of_past_points=self.number_of_past_points)
+            self.graph_maker.plot_train_test_val(ticker, train_graph, test_graph, validation_graph)
 
             for position, model_name in enumerate([element.get('model') for element in self.models_and_parameters]):
 
@@ -51,5 +47,7 @@ class StockOptimizer:
                         dimension_of_first_layer=self.number_of_past_points * train[0][0].shape[1],
                         ticker=ticker,
                     )
-                    best_parameters, mse, trend_ratio = model.run(train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
-                    logger.info(f'The best scenario for a Feed Forward Neural Net is {best_parameters}, mse: {mse}, ratio of trend {trend_ratio*100}')
+                if model_name == 'random_forest':
+                    model = RandomForest(ticker=ticker)
+                best_parameters, mse, trend_ratio = model.run(train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
+                logger.info(f'The best scenario for a Feed Forward Neural Net is {best_parameters}, mse: {mse}, ratio of trend {trend_ratio*100}')

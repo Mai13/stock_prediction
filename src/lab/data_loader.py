@@ -52,7 +52,7 @@ class DataLoader:
         plt.close()
 
     # Todo: delete all the tickers that we wont be using
-    def transform(self, adjusted_data, neural_net, number_of_past_points):
+    def transform(self, adjusted_data, number_of_past_points):
         adjusted_data.date = [int(one_date.strftime("%s"))
                               for one_date in adjusted_data.date]
         adjusted_data.drop('symbol', axis=1, inplace=True)
@@ -62,9 +62,7 @@ class DataLoader:
         for column_pos in range(1, adjusted_data.shape[1]):
             adjusted_data.iloc[:, column_pos] = self.__scale(adjusted_data.iloc[:, column_pos].values)
         self.__plot(adjusted_data['date'], adjusted_data['close'], 'after_adjust')
-
         data_array = adjusted_data.values
-        if neural_net:
-            train, test, validation, train_graph, test_graph, validation_graph = self.__transform_data_for_nn(
+        train, test, validation, train_graph, test_graph, validation_graph = self.__transform_data_for_nn(
                 data_array, number_of_past_points)
         return train, test, validation, train_graph, test_graph, validation_graph

@@ -15,6 +15,18 @@ feed_forward = {
         'epochs': [3, 10, 30, 50, 70]
     }
 }
+
+feed_forward = {
+    'model': 'random_forest',
+    'training': True,
+    'parameters': {
+        'criterion': ['gini', 'entropy'],
+        'learning_rate': [0.1, 0.01, 0.001, 0.0001],
+        'epochs': [3, 10, 30, 50, 70]
+    }
+}
+
+
 models = [feed_forward]
 
 
