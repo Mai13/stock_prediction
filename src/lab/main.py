@@ -16,18 +16,21 @@ feed_forward = {
     }
 }
 
-feed_forward = {
+random_forest = {
     'model': 'random_forest',
     'training': True,
     'parameters': {
+        'min_samples_leaf': [1, 2, 4],
+        'max_features': ['auto', 'sqrt'],
         'criterion': ['gini', 'entropy'],
-        'learning_rate': [0.1, 0.01, 0.001, 0.0001],
-        'epochs': [3, 10, 30, 50, 70]
+        'min_samples_split': [2, 5, 10],
+        'n_estimators': [20, 50, 100, 200, 400],
+        'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
 
 
-models = [feed_forward]
+models = [random_forest]
 
 
 def main():
