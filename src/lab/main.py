@@ -22,15 +22,26 @@ random_forest = {
     'parameters': {
         'min_samples_leaf': [1, 2, 4],
         'max_features': ['auto', 'sqrt'],
-        'criterion': ['gini', 'entropy'],
         'min_samples_split': [2, 5, 10],
-        'n_estimators': [20, 50, 100, 200, 400],
+        'n_estimators': [2, 5, 7, 10, 15, 20, 50, 100, 200, 400],
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
 
+xgboost = {
+    'model': 'xgboost',
+    'training': True,
+    'parameters': {
+        'min_child_weight': [1, 5, 10],
+        'gamma': [0.5, 1, 1.5, 2, 5],
+        'subsample': [0.6, 0.8, 1.0],
+        'colsample_bytree': [0.6, 0.8, 1.0],
+        'n_estimators': [2, 5, 7, 10, 15, 20, 50, 100],
+        'max_depth': [3, 4, 5, 7, 10, 15, 20]
+    }
+}
 
-models = [random_forest]
+models = [xgboost]
 
 
 def main():

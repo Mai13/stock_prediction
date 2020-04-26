@@ -144,8 +144,7 @@ class RandomForest:
                                 test, min_samples_leaf, max_features, min_samples_split,
                                 n_estimators, max_depth)
                             logger.info(f'Ends Test')
-                            # Todo: check overfitting with: train_loss,
-                            # val_loss
+                            # Todo: check overfitting with: train_loss, val loss
                             current_mse = mean_squared_error(
                                 true_values, predictions)
                             if current_mse < mse:
