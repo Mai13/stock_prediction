@@ -70,7 +70,7 @@ class RandomForest:
             max_depth):
 
         model = load(
-            f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}_'
+            f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
             f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth'
             f'_{max_depth}.joblib')
         return model
