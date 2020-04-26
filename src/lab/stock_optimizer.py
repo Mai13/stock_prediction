@@ -5,7 +5,6 @@ from tecnical_analysis import TechnicalIndicators
 from feed_forward_nn import FeedForwardNN
 from random_forest import RandomForest
 from xgboost import XGBoost
-from svm import SVM
 from arima import Arima
 import logging
 

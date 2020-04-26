@@ -43,18 +43,18 @@ class RandomForest:
         model = RandomForestRegressor(random_state=self.random_state,
                                       min_samples_leaf=min_samples_leaf,
                                       max_features=max_features,
-                                      criterion=criterion,
+                                      # criterion=criterion,
                                       min_samples_split=min_samples_split,
                                       n_estimators=n_estimators,
                                       max_depth=max_depth)
 
-        model.fit(train_x, train_y)
+        model.fit(train_x, train_y.flatten())
 
         predicted_val = model.predict(validation_x)
         predicted_train = model.predict(train_x)
 
-        mse_validation = mean_squared_error(predicted_val, train_y)
-        mse_train = mean_squared_error(predicted_train, validation_y)
+        mse_validation = mean_squared_error(predicted_val, validation_y)
+        mse_train = mean_squared_error(predicted_train, train_y)
 
         dump(
             model,
@@ -96,7 +96,7 @@ class RandomForest:
             n_estimators,
             max_depth)
         test_x, test_y = self.__transform_data(test)
-        predictions_test = trained_model(test_x)
+        predictions_test = trained_model.predict(test_x)
 
         return predictions_test, test_y
 
