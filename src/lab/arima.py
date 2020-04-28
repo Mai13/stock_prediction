@@ -1,14 +1,38 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
+from graph_maker import CreateGraphs
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.arima_model import ARIMA
 import pathlib
 import pandas as pd
 import numpy as np
-import statsmodels.api as sm
+import logging
+
+logger = logging.getLogger('ARIMA')
 
 
 class Arima:
+
+    def __init__(self):
+
+        self.graph_maker = CreateGraphs()
+        self.path = f'{pathlib.Path(__file__).parent.parent.absolute()}'
+
+    def __check_stationarity(self, train):
+
+        # Rolling statistics
+        roll_mean = train.rolling(30).mean()
+        roll_std = train.rolling(5).std()
+
+        # Dickey-Fuller test
+        print('Dickey-Fuller test results\n')
+        df_test = adfuller(train, regresults=False)
+        test_result = pd.Series(df_test[0:4], index=[
+            'Test Statistic', 'p-value', '# of lags', '# of obs'])
+        print(test_result)
+        for k, v in df_test[4].items():
+            print('Critical value at %s: %1.5f' % (k, v))
+
+        self.graph_maker.plot_rolling_statistics(
+            train, roll_mean, roll_std, self.path)
 
     def run(self):
 
@@ -27,32 +51,6 @@ class Arima:
 
         # Conver to Series to run Dickey-Fuller test
         df_final = pd.Series(df_final['close'])
-
-        def check_stationarity(ts_data):
-            # Rolling statistics
-            roll_mean = ts_data.rolling(30).mean()
-            roll_std = ts_data.rolling(5).std()
-
-            # Plot rolling statistics
-            fig = plt.figure(figsize=(20, 10))
-            plt.subplot(211)
-            plt.plot(ts_data, color='black', label='Original Data')
-            plt.plot(roll_mean, color='red', label='Rolling Mean(30 days)')
-            plt.legend()
-            plt.subplot(212)
-            plt.plot(roll_std, color='green', label='Rolling Std Dev(5 days)')
-            plt.legend()
-            plt.show()
-            # plt.savefig(f'{filepath}/results/ARIMA_picture_1.png')
-
-            # Dickey-Fuller test
-            print('Dickey-Fuller test results\n')
-            df_test = adfuller(ts_data, regresults=False)
-            test_result = pd.Series(df_test[0:4], index=[
-                                    'Test Statistic', 'p-value', '# of lags', '# of obs'])
-            print(test_result)
-            for k, v in df_test[4].items():
-                print('Critical value at %s: %1.5f' % (k, v))
 
         check_stationarity(df_final)
 

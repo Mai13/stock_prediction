@@ -168,3 +168,23 @@ class CreateGraphs:
         plt.savefig(
             f'{self.path}/results/test_graph_{ticker}_{optimizer}_{epochs}_{learning_rate}.png')
         plt.close()
+
+    def plot_rolling_statistics(
+            self,
+            train,
+            rolling_mean,
+            rolling_statistics,
+            path):
+
+        # Plot rolling statistics
+        plt.figure(figsize=(20, 10))
+        plt.plot(train, color='black', label='Original Data')
+        plt.plot(rolling_mean, color='red', label='Rolling Mean(30 days)')
+        plt.legend()
+        plt.subplot(212)
+        plt.plot(
+            rolling_statistics,
+            color='green',
+            label='Rolling Std Dev(5 days)')
+        plt.legend()
+        plt.savefig(f'{path}/results/ARIMA_rolling_statistics.png')
