@@ -50,5 +50,7 @@ class StockOptimizer:
                     model = RandomForest(ticker=ticker)
                 if model_name == 'xgboost':
                     model = XGBoost(ticker=ticker)
+                if model_name == 'Arima':
+                    model = Arima(ticker=ticker)
                 best_parameters, mse, trend_ratio = model.run(train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
                 logger.info(f'The best scenario for a Feed Forward Neural Net is {best_parameters}, mse: {mse}, ratio of trend {trend_ratio*100}')

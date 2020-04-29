@@ -11,48 +11,43 @@ logger = logging.getLogger('ARIMA')
 
 class Arima:
 
-    def __init__(self):
+    def __init__(self, ticker):
 
         self.graph_maker = CreateGraphs()
         self.path = f'{pathlib.Path(__file__).parent.parent.absolute()}'
+        self.ticker = ticker
+
+    def __transform_data(self, dataset):
+
+        x = np.empty((0, 77))  # todo: set as parameter
+        y = np.empty((0, 1))
+        for pos, data in enumerate(dataset):
+            x = np.vstack((x, data[0].flatten().reshape(1, -1)))
+            y = np.vstack((y, np.array(data[1])))
+
+        return x, y
 
     def __check_stationarity(self, train):
 
         # Rolling statistics
-        roll_mean = train.rolling(30).mean()
-        roll_std = train.rolling(5).std()
+        roll_mean = pd.DataFrame(train).rolling(30).mean()
+        roll_std = pd.DataFrame(train).rolling(5).std()
 
         # Dickey-Fuller test
         print('Dickey-Fuller test results\n')
-        df_test = adfuller(train, regresults=False)
+        df_test = adfuller(pd.DataFrame(train), regresults=False)
         test_result = pd.Series(df_test[0:4], index=[
             'Test Statistic', 'p-value', '# of lags', '# of obs'])
         print(test_result)
         for k, v in df_test[4].items():
             print('Critical value at %s: %1.5f' % (k, v))
 
-        self.graph_maker.plot_rolling_statistics(
-            train, roll_mean, roll_std, self.path)
+        self.graph_maker.plot_rolling_statistics(train, roll_mean, roll_std, self.path)
 
-    def run(self):
+    def run(self, train, val, test, model_parameters):
 
-        filepath = pathlib.Path(__file__).resolve().parent
-
-        df = pd.read_csv(
-            f'{filepath.resolve().parent}/stock_market_historical_data/prices-split-adjusted.csv',
-            index_col=0)
-        dfa = df[df['symbol'] == 'AAPL']
-
-        dfa.index.sort_values()
-        # Convert index to pandas datetime
-        dfa.index = pd.to_datetime(dfa.index, format="%Y/%m/%d")
-        df_final = dfa.drop(
-            ['symbol', 'open', 'low', 'high', 'volume'], axis=1)
-
-        # Conver to Series to run Dickey-Fuller test
-        df_final = pd.Series(df_final['close'])
-
-        check_stationarity(df_final)
+        train_x, train_y = self.__transform_data(train)
+        self.__check_stationarity(train_y)
 
         # Log transform time series
         df_final_log = np.log(df_final)

@@ -40,8 +40,11 @@ xgboost = {
         'max_depth': [3, 4, 5, 7, 10, 15, 20]
     }
 }
+arima = {
+    'model': 'Arima'
+}
 
-models = [xgboost]
+models = [arima]
 
 
 def main():
