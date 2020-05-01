@@ -40,8 +40,6 @@ class XGBoost:
         train_x, train_y = self.__transform_data(train)
         validation_x, validation_y = self.__transform_data(validation)
 
-        a = xgb.XGBRegressor()
-
         model = xgb.XGBRegressor(min_child_weight=min_child_weight, gamma=gamma, subsample=subsample,
                                  colsample_bytree=colsample_bytree, n_estimators=n_estimators, max_depth=max_depth)
 

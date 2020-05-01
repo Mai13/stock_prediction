@@ -4,7 +4,7 @@ from graph_maker import CreateGraphs
 from tecnical_analysis import TechnicalIndicators
 from feed_forward_nn import FeedForwardNN
 from random_forest import RandomForest
-from xgboost import XGBoost
+from xgboost_model import XGBoost
 from arima import Arima
 import logging
 

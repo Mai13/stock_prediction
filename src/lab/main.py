@@ -44,7 +44,8 @@ arima = {
     'model': 'Arima'
 }
 
-models = [arima]
+# models = [arima]
+models = [xgboost]
 
 
 def main():
