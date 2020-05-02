@@ -30,7 +30,7 @@ random_forest = {
 
 xgboost = {
     'model': 'xgboost',
-    'training': True,
+    'training': False,
     'parameters': {
         'min_child_weight': [1, 5, 10],
         'gamma': [0.5, 1, 1.5, 2, 5],

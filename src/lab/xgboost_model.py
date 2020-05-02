@@ -111,9 +111,8 @@ class XGBoost:
 
     def run(self, train, val, test, model_parameters):
 
-        mse = 0
+        mse = 1000
         best_parameters = {}
-        print(model_parameters)
 
         for min_child_weight in model_parameters.get('parameters').get('min_child_weight'):
             for gamma in model_parameters.get('parameters').get('gamma'):
@@ -143,8 +142,7 @@ class XGBoost:
                                                                        colsample_bytree, n_estimators, max_depth)
                                 logger.info(f'Ends Test')
                                 # Todo: check overfitting with: train_loss, val loss
-                                current_mse = mean_squared_error(
-                                    true_values, predictions)
+                                current_mse = mean_squared_error(true_values, predictions)
                                 if current_mse < mse:
                                     best_parameters = {
                                         'min_child_weight': min_child_weight,
@@ -155,6 +153,5 @@ class XGBoost:
                                         'max_depth': max_depth
                                     }
                                     mse = current_mse
-                                percenatge_of_guess_in_trend = self.__get_trend(
-                                    true_values, predictions)
+                                    percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
         return best_parameters, mse, percenatge_of_guess_in_trend

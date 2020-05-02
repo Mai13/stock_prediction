@@ -40,7 +40,7 @@ class DataLoader:
         return train, test, validation, train_graph, test_graph, validation_graph
 
     def __scale(self, data):
-        data = MinMaxScaler().fit_transform(data.reshape(-1, 1))
+        data = MinMaxScaler(feature_range=(0, 1)).fit_transform(data.reshape(-1, 1))
         data = StandardScaler().fit_transform(data)
         return data
 

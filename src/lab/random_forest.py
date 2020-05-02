@@ -110,7 +110,7 @@ class RandomForest:
 
     def run(self, train, val, test, model_parameters):
 
-        mse = 0
+        mse = 1000
         best_parameters = {}
 
         for min_samples_leaf in model_parameters.get(
@@ -156,6 +156,6 @@ class RandomForest:
                                     'max_depth': max_depth
                                 }
                                 mse = current_mse
-                            percenatge_of_guess_in_trend = self.__get_trend(
-                                true_values, predictions)
+                                percenatge_of_guess_in_trend = self.__get_trend(
+                                    true_values, predictions)
         return best_parameters, mse, percenatge_of_guess_in_trend

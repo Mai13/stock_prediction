@@ -16,8 +16,7 @@ class Net(nn.Module):
     def __init__(self, dimension_of_first_layer):
         super().__init__()
         self.fc1 = nn.Linear(
-            dimension_of_first_layer,
-            10)  # number_of_past_points
+            dimension_of_first_layer, 10)  # number_of_past_points
         self.fc2 = nn.Linear(10, 10)
         # self.fc3 = nn.Linear(10, 10)
         self.fc4 = nn.Linear(10, 1)
@@ -124,7 +123,7 @@ class FeedForwardNN:
 
     def run(self, train, val, test, model_parameters):
 
-        mse = 0
+        mse = 1000
         best_parameters = {}
 
         for optimizer_name in model_parameters.get(
@@ -175,6 +174,6 @@ class FeedForwardNN:
                             'epochs': epoch,
                             'optimizer': optimizer_name,
                         }
-                    percenatge_of_guess_in_trend = self.__get_trend(
-                        true_values, predictions)
+                        percenatge_of_guess_in_trend = self.__get_trend(
+                            true_values, predictions)
         return best_parameters, mse, percenatge_of_guess_in_trend
