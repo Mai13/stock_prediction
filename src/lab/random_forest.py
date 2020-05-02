@@ -99,6 +99,7 @@ class RandomForest:
     def __get_trend(self, true_values, predictions):
 
         ratio = 0
+
         for pos in range(len(true_values) - 1):
 
             real_diff = true_values[pos] - true_values[pos + 1]
@@ -107,7 +108,7 @@ class RandomForest:
             if real_diff * prediction_diff > 0:
                 ratio += 1
 
-        return ratio / len(true_values) - 1
+        return ratio / (len(true_values) - 1)
 
     def run(self, train, val, test, model_parameters):
 
@@ -156,6 +157,5 @@ class RandomForest:
                                     'max_depth': max_depth
                                 }
                                 mse = current_mse
-                                percenatge_of_guess_in_trend = self.__get_trend(
-                                    true_values, predictions)
+                                percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
         return best_parameters, mse, percenatge_of_guess_in_trend
