@@ -154,4 +154,5 @@ class XGBoost:
                                     }
                                     mse = current_mse
                                     percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
-        return best_parameters, mse, percenatge_of_guess_in_trend
+                                    best_prediction = predictions
+        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values

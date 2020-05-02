@@ -188,3 +188,12 @@ class CreateGraphs:
             label='Rolling Std Dev(5 days)')
         plt.legend()
         plt.savefig(f'{path}/results/ARIMA_rolling_statistics.png')
+
+    def plot_test_results(self, test_set, predictions, ticker, mse, model):
+
+        plt.figure(figsize=(20, 10))
+        plt.title(f'{model} of {ticker} with mse {mse}')
+        plt.plot(range(0, len(test_set)), test_set, color='blue', label='Original Data')
+        plt.plot(range(0, len(predictions)), predictions, color='orange', label='Prediction')
+        plt.legend()
+        plt.savefig(f'{self.path}/results/{ticker}_{model}.png')
