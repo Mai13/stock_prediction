@@ -13,7 +13,7 @@ logger = logging.getLogger('Stock Optimizer')
 
 class StockOptimizer:
 
-    def __init__(self, number_of_tickers, models_and_parameters):
+    def __init__(self, number_of_tickers, models_and_parameters, overfitting_threshold):
         self.number_of_tickers = number_of_tickers
         self.data_loader = DataLoader()
         self.choose_ticker = ChooseTicker()
@@ -21,6 +21,7 @@ class StockOptimizer:
         self.technical_analysis = TechnicalIndicators()
         self.number_of_past_points = 7
         self.models_and_parameters = models_and_parameters
+        self.overfitting_threshold = overfitting_threshold
 
     def run(self):
 
@@ -45,13 +46,14 @@ class StockOptimizer:
                     model = FeedForwardNN(
                         dimension_of_first_layer=self.number_of_past_points * train[0][0].shape[1],
                         ticker=ticker,
+                        overfitting_threshold=self.overfitting_threshold,
                     )
                 if model_name == 'random_forest':
-                    model = RandomForest(ticker=ticker)
+                    model = RandomForest(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
                 if model_name == 'xgboost':
-                    model = XGBoost(ticker=ticker)
+                    model = XGBoost(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
                 if model_name == 'Arima':
-                    model = Arima(ticker=ticker)
+                    model = Arima(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
                 best_parameters, mse, trend_ratio, prediction, true_values = model.run(
                     train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
                 logger.info(f'The best scenario for a Feed Forward Neural Net is {best_parameters}, mse: {mse}, ratio of trend {trend_ratio*100}')

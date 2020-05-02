@@ -10,11 +10,12 @@ logger = logging.getLogger('Random Forest')
 
 class RandomForest:
 
-    def __init__(self, ticker):
+    def __init__(self, ticker, overfitting_threshold):
 
         self.random_state = 2020
         self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model'
         self.ticker = ticker
+        self.overfitting_threshold = overfitting_threshold
 
     def __transform_data(self, dataset):
 
@@ -145,9 +146,8 @@ class RandomForest:
                                 n_estimators, max_depth)
                             logger.info(f'Ends Test')
                             # Todo: check overfitting with: train_loss, val loss
-                            current_mse = mean_squared_error(
-                                true_values, predictions)
-                            if current_mse < mse:
+                            current_mse = mean_squared_error(true_values, predictions)
+                            if (current_mse < mse) & (abs(mse_validation - mse_train) < self.overfitting_threshold):
                                 best_parameters = {
                                     'min_samples_leaf': min_samples_leaf,
                                     'max_features': max_features,

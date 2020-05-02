@@ -26,17 +26,9 @@ class TechnicalIndicators:
     def __macd(self, data):
 
         # TODO: SOLVE THIS INDICATOR, HAS AN OLD VERSION OF PANDAS
-
-        # data['26ema'] = pd.ewm('close', halflife=self.ma_long_period)
-        # data['26ema'] = data['close'].ewm(com=self.ema_coef).mean()
-        # data['12ema'] = pd.ewm('close', halflife=self.ma_short_period)
-        # data['26ema'] = pd.ewma(data['close'], span=self.ma_long_period)
-        # data['12ema'] = pd.ewma(data['close'], span=self.ma_short_period)
         data['12ema'] = data['close'].ewm(span=12, adjust=False).mean()
         data['26ema'] = data['close'].ewm(span=26, adjust=False).mean()
         data['MACD'] = (data['12ema'] - data['26ema'])
-        # print(data.columns)
-        # print(data.head())
         data.drop('26ema', axis=1, inplace=True)
         data.drop('12ema', axis=1, inplace=True)
         return data

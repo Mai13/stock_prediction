@@ -25,10 +25,8 @@ class CreateGraphs:
         xmacd_ = shape_0 - last_days
 
         data.sort_values(by=['date'], inplace=True)
-        print(len(data.index))
         dataset = data.iloc[-last_days:, :]
         dataset.index = dataset['date']
-        print(len(dataset.index))
         x_ = range(3, dataset.shape[0])
         x_ = list(dataset.index)
 

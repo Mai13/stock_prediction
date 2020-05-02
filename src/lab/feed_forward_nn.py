@@ -31,12 +31,13 @@ class Net(nn.Module):
 
 class FeedForwardNN:
 
-    def __init__(self, dimension_of_first_layer, ticker):
+    def __init__(self, dimension_of_first_layer, ticker, overfitting_threshold):
 
         self.ticker = ticker
         self.net = Net(dimension_of_first_layer)
         self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model'
         self.graphing_module = CreateGraphs()
+        self.overfitting_threshold = overfitting_threshold
 
     def __train(
             self,
@@ -55,7 +56,6 @@ class FeedForwardNN:
             for data in train:
                 X, y = data
                 optimizer.zero_grad()
-                # print(torch.Tensor(X.flatten()).shape)
                 output = self.net(torch.Tensor(X.flatten()))
                 loss = criterion(output, torch.Tensor(np.array([y])))
                 loss_accum += loss.data.item()

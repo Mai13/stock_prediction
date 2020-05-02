@@ -7,7 +7,6 @@ class ChooseTicker:
     def __init__(self):
         random.seed(195)
         self.path = pathlib.Path(__file__).parent.parent.parent.absolute()
-        print(self.path)
 
     def modern_portfolio_optimization(self, data):
         pass
