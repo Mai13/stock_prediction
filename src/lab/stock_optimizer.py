@@ -13,15 +13,15 @@ logger = logging.getLogger('Stock Optimizer')
 
 class StockOptimizer:
 
-    def __init__(self, number_of_tickers, models_and_parameters, overfitting_threshold):
+    def __init__(self, number_of_tickers, models_and_parameters, overfitting_threshold, number_of_past_points):
         self.number_of_tickers = number_of_tickers
         self.data_loader = DataLoader()
         self.choose_ticker = ChooseTicker()
         self.graph_maker = CreateGraphs()
         self.technical_analysis = TechnicalIndicators()
-        self.number_of_past_points = 7
         self.models_and_parameters = models_and_parameters
         self.overfitting_threshold = overfitting_threshold
+        self.number_of_past_points = number_of_past_points
 
     def run(self):
 

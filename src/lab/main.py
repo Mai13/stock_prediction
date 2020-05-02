@@ -6,6 +6,7 @@ import pathlib
 path = pathlib.Path(__file__).parent.absolute()
 logger = create_logger(f'{path.parent}/results', 'INFO')
 overfitting_threshold = 0.1  # 0.01, 0.1, 0.5
+number_of_past_points = 7
 
 feed_forward = {
     'model': 'feed_forward_neural_net',
@@ -54,7 +55,8 @@ def main():
     stock_optimizer = StockOptimizer(
         number_of_tickers=10,
         models_and_parameters=models,
-        overfitting_threshold=overfitting_threshold
+        overfitting_threshold=overfitting_threshold,
+        number_of_past_points=number_of_past_points
     )
     stock_optimizer.run()
 
