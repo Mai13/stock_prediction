@@ -4,6 +4,7 @@ import numpy as np
 import logging
 from joblib import dump, load
 import pathlib
+import os
 
 logger = logging.getLogger('XGBoost')
 
@@ -52,11 +53,10 @@ class XGBoost:
         mse_validation = mean_squared_error(predicted_val, validation_y)
         mse_train = mean_squared_error(predicted_train, train_y)
 
-        dump(
-            model,
-            f'{self.model_path}/ticker_{self.ticker}_min_child_weight_{min_child_weight}_gamma_{gamma}'
-            f'_subsample_{subsample}_colsample_bytree_{colsample_bytree}_n_estimator_{n_estimators}'
-            f'_max_depth_{max_depth}.joblib')
+        if abs(mse_validation - mse_train) < self.overfitting_threshold:
+            dump(model, f'{self.model_path}/ticker_{self.ticker}_min_child_weight_{min_child_weight}_gamma_{gamma}'
+                        f'_subsample_{subsample}_colsample_bytree_{colsample_bytree}_n_estimator_{n_estimators}'
+                        f'_max_depth_{max_depth}.joblib')
 
         return mse_validation, mse_train
 
@@ -69,10 +69,14 @@ class XGBoost:
             n_estimators,
             max_depth):
 
-        model = load(
-            f'{self.model_path}/ticker_{self.ticker}_min_child_weight_{min_child_weight}_gamma_{gamma}'
-            f'_subsample_{subsample}_colsample_bytree_{colsample_bytree}_n_estimator_{n_estimators}'
-            f'_max_depth_{max_depth}.joblib')
+        model_path = load(f'{self.model_path}/ticker_{self.ticker}_min_child_weight_{min_child_weight}_gamma_{gamma}'
+                          f'_subsample_{subsample}_colsample_bytree_{colsample_bytree}_n_estimator_'
+                          f'{n_estimators}_max_depth_{max_depth}.joblib')
+
+        if os.path.exists(model_path):
+            model = load(model_path)
+        else:
+            model = None
         return model
 
     def __test(
@@ -92,10 +96,17 @@ class XGBoost:
             colsample_bytree,
             n_estimators,
             max_depth)
-        test_x, test_y = self.__transform_data(test)
-        predictions_test = trained_model.predict(test_x)
 
-        return predictions_test, test_y
+        if trained_model:
+            test_x, test_y = self.__transform_data(test)
+            predictions_test = trained_model.predict(test_x)
+            there_is_prediction = True
+        else:
+            logger.info('This model does not exist due to the overfitting threshold')
+            predictions_test, test_y = None, None
+            there_is_prediction = False
+
+        return predictions_test, test_y, there_is_prediction
 
     def __get_trend(self, true_values, predictions):
 
@@ -114,6 +125,10 @@ class XGBoost:
 
         mse = 1000
         best_parameters = {}
+        percenatge_of_guess_in_trend = 0
+        best_prediction = 0
+        true_values = None
+        there_is_a_best_prediction = False
 
         for min_child_weight in model_parameters.get('parameters').get('min_child_weight'):
             for gamma in model_parameters.get('parameters').get('gamma'):
@@ -139,21 +154,24 @@ class XGBoost:
                                         f'MSE validation {mse_validation} and MSE train {mse_train}')
                                 else:
                                     mse_validation, mse_train = None, None
-                                predictions, true_values = self.__test(test, min_child_weight, gamma, subsample,
-                                                                       colsample_bytree, n_estimators, max_depth)
-                                logger.info(f'Ends Test')
-                                # Todo: check overfitting with: train_loss, val loss
-                                current_mse = mean_squared_error(true_values, predictions)
-                                if (current_mse < mse) & (abs(mse_validation - mse_train) < self.overfitting_threshold):
-                                    best_parameters = {
-                                        'min_child_weight': min_child_weight,
-                                        'gamma': gamma,
-                                        'subsample': subsample,
-                                        'colsample_bytree': colsample_bytree,
-                                        'n_estimators': n_estimators,
-                                        'max_depth': max_depth
-                                    }
-                                    mse = current_mse
-                                    percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
-                                    best_prediction = predictions
-        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values
+                                predictions, true_values, there_is_prediction = self.__test(test, min_child_weight,
+                                                                                            gamma, subsample,
+                                                                                            colsample_bytree,
+                                                                                            n_estimators,
+                                                                                            max_depth)
+                                if there_is_prediction:
+                                    current_mse = mean_squared_error(true_values, predictions)
+                                    if current_mse < mse:
+                                        best_parameters = {
+                                            'min_child_weight': min_child_weight,
+                                            'gamma': gamma,
+                                            'subsample': subsample,
+                                            'colsample_bytree': colsample_bytree,
+                                            'n_estimators': n_estimators,
+                                            'max_depth': max_depth
+                                        }
+                                        mse = current_mse
+                                        percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
+                                        best_prediction = predictions
+                                        there_is_a_best_prediction = True
+        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values, there_is_a_best_prediction
