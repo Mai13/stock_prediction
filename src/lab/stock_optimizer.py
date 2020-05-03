@@ -54,7 +54,11 @@ class StockOptimizer:
                     model = XGBoost(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
                 if model_name == 'Arima':
                     model = Arima(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
-                best_parameters, mse, trend_ratio, prediction, true_values = model.run(
+                best_parameters, mse, trend_ratio, prediction, true_values, there_is_a_best_prediction = model.run(
                     train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
                 logger.info(f'The best scenario for a Feed Forward Neural Net is {best_parameters}, mse: {mse}, ratio of trend {trend_ratio*100}')
-                self.graph_maker.plot_test_results(true_values, prediction, ticker, mse, model_name)
+                if there_is_a_best_prediction:
+                    self.graph_maker.plot_test_results(true_values, prediction, ticker, mse, model_name)
+                else:
+                    logger.info(f'No model could be fitted for {model_name} due to the '
+                                f'overfitting threshold of {self.overfitting_threshold}')
