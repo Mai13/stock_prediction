@@ -53,7 +53,7 @@ class XGBoost:
         mse_validation = mean_squared_error(predicted_val, validation_y)
         mse_train = mean_squared_error(predicted_train, train_y)
 
-        if abs(mse_validation - mse_train) > self.overfitting_threshold:
+        if abs(mse_validation - mse_train) < self.overfitting_threshold:
             dump(model, f'{self.model_path}/ticker_{self.ticker}_min_child_weight_{min_child_weight}_gamma_{gamma}'
                         f'_subsample_{subsample}_colsample_bytree_{colsample_bytree}_n_estimator_{n_estimators}'
                         f'_max_depth_{max_depth}.joblib')
