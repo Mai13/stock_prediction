@@ -113,4 +113,6 @@ class Arima:
         plt.legend()
         plt.show()
 
+        return None, None, None, None, None
+
         import statsmodels.api as sm

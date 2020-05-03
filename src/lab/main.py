@@ -17,16 +17,29 @@ feed_forward = {
         'epochs': [3, 10, 30, 50, 70]
     }
 }
-
+"""
 random_forest = {
     'model': 'random_forest',
-    'training': True,
+    'training': False,
     'parameters': {
         'min_samples_leaf': [1, 2, 4],
         'max_features': ['auto', 'sqrt'],
         'min_samples_split': [2, 5, 10],
         'n_estimators': [2, 5, 7, 10, 15, 20, 50, 100, 200, 400],
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
+    }
+}
+"""
+
+random_forest = {
+    'model': 'random_forest',
+    'training': True,
+    'parameters': {
+        'min_samples_leaf': [4],
+        'max_features': ['sqrt'],
+        'min_samples_split': [10],
+        'n_estimators': [15],
+        'max_depth': [5]
     }
 }
 
@@ -47,7 +60,8 @@ arima = {
 }
 
 # models = [arima]
-models = [random_forest, xgboost]
+# models = [random_forest, xgboost]
+models = [random_forest]
 
 
 def main():

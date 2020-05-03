@@ -148,6 +148,7 @@ class RandomForest:
                             logger.info(f'Ends Test')
                             # Todo: check overfitting with: train_loss, val loss
                             current_mse = mean_squared_error(true_values, predictions)
+
                             if (current_mse < mse) & (abs(mse_validation - mse_train) < self.overfitting_threshold):
                                 best_parameters = {
                                     'min_samples_leaf': min_samples_leaf,
@@ -158,4 +159,5 @@ class RandomForest:
                                 }
                                 mse = current_mse
                                 percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
-        return best_parameters, mse, percenatge_of_guess_in_trend
+                                best_prediction = predictions
+        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values
