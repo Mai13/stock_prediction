@@ -5,7 +5,7 @@ import pathlib
 
 path = pathlib.Path(__file__).parent.absolute()
 logger = create_logger(f'{path.parent}/results', 'INFO')
-overfitting_threshold = 0.00001  # 0.01, 0.05, 0.1, 0.5
+overfitting_threshold = 0.1  # 0.01, 0.05, 0.1, 0.5
 number_of_past_points = 7
 
 feed_forward = {
@@ -72,7 +72,7 @@ arima = {
 }
 
 # models = [arima]
-# models = [random_forest, xgboost]
+models = [random_forest, xgboost]
 # models = [random_forest]
 # models = [xgboost]
 

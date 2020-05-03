@@ -56,7 +56,7 @@ class RandomForest:
         mse_validation = mean_squared_error(predicted_val, validation_y)
         mse_train = mean_squared_error(predicted_train, train_y)
 
-        if abs(mse_validation - mse_train) < self.overfitting_threshold:
+        if abs(mse_validation - mse_train) > self.overfitting_threshold:
             dump(model, f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
                 f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
 
