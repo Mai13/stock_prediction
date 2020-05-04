@@ -174,4 +174,6 @@ class XGBoost:
                                         percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
                                         best_prediction = predictions
                                         there_is_a_best_prediction = True
+                                        if percenatge_of_guess_in_trend < 0:
+                                            logger.ERROR(f'best parameters {best_parameters}, have a NEGATIVE RATIO')
         return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values, there_is_a_best_prediction

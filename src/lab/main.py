@@ -20,7 +20,7 @@ feed_forward = {
 
 random_forest = {
     'model': 'random_forest',
-    'training': False,
+    'training': True,
     'parameters': {
         'min_samples_leaf': [1, 2, 4],
         'max_features': ['auto', 'sqrt'],
@@ -56,7 +56,7 @@ xgboost = {
 """
 xgboost = {
     'model': 'xgboost',
-    'training': False,
+    'training': True,
     'parameters': {
         'min_child_weight': [1, 5, 10],
         'gamma': [0.5, 1, 1.5, 2, 5],
@@ -72,7 +72,7 @@ arima = {
 }
 
 # models = [arima]
-models = [random_forest, xgboost]
+models = [random_forest, xgboost, feed_forward]
 # models = [random_forest]
 # models = [xgboost]
 
