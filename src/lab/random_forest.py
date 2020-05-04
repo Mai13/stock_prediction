@@ -25,7 +25,6 @@ class RandomForest:
         for pos, data in enumerate(dataset):
             x = np.vstack((x, data[0].flatten().reshape(1, -1)))
             y = np.vstack((y, np.array(data[1])))
-
         return x, y
 
     def __train(
@@ -95,6 +94,7 @@ class RandomForest:
             min_samples_split,
             n_estimators,
             max_depth)
+
         if trained_model:
             test_x, test_y = self.__transform_data(test)
             predictions_test = trained_model.predict(test_x)
@@ -103,7 +103,6 @@ class RandomForest:
             logger.info('This model does not exist due to the overfitting threshold')
             predictions_test, test_y = None, None
             there_is_prediction = False
-
         return predictions_test, test_y, there_is_prediction
 
     def __get_trend(self, true_values, predictions):
@@ -173,4 +172,5 @@ class RandomForest:
                                     percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
                                     best_prediction = predictions
                                     there_is_a_best_prediction = True
+
         return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values, there_is_a_best_prediction

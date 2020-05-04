@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger('Data loader')
 path = pathlib.Path(__file__).parent.parent.parent.absolute()
@@ -24,6 +25,7 @@ class DataLoader:
         return adjusted_data
 
     def __transform_data_for_nn(self, data_array, number_of_past_points):
+
         transformed_data = []
         transformed_data_for_graphs = []
         for position in range(0, data_array.shape[0] - number_of_past_points):
@@ -32,9 +34,9 @@ class DataLoader:
             transformed_data_for_graphs.append([data_array[position: position + number_of_past_points, 0].astype(
                 float), float(data_array[position - 1, 2])])
 
-        test_and_val, train = train_test_split(transformed_data, test_size=0.7, random_state=1, shuffle=False)
+        test_and_val, train = train_test_split(transformed_data[::-1], test_size=0.7, random_state=1, shuffle=False)
         test, validation = train_test_split(test_and_val, test_size=0.5, random_state=1, shuffle=False)
-        test_and_val_graph, train_graph = train_test_split(transformed_data_for_graphs, test_size=0.7, random_state=1, shuffle=False)
+        test_and_val_graph, train_graph = train_test_split(transformed_data_for_graphs[::-1], test_size=0.7, random_state=1, shuffle=False)
         test_graph, validation_graph = train_test_split(test_and_val_graph, test_size=0.5, random_state=1, shuffle=False)
 
         return train, test, validation, train_graph, test_graph, validation_graph
@@ -62,6 +64,7 @@ class DataLoader:
         for column_pos in range(1, adjusted_data.shape[1]):
             adjusted_data.iloc[:, column_pos] = self.__scale(adjusted_data.iloc[:, column_pos].values)
         self.__plot(adjusted_data['date'], adjusted_data['close'], 'after_adjust')
+        adjusted_data.reset_index(drop=True, inplace=True)
         data_array = adjusted_data.values
         train, test, validation, train_graph, test_graph, validation_graph = self.__transform_data_for_nn(
                 data_array, number_of_past_points)

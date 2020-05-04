@@ -115,6 +115,16 @@ class CreateGraphs:
         plt.savefig(f'{self.path}/results/train_test_val_{ticker}.png')
         plt.close()
 
+        plt.figure(figsize=(20, 10))
+        plt.plot(
+            test_dates,
+            test_closing_prices,
+            label='Testing points',
+            c='orange')
+        plt.legend(loc="upper left")
+        plt.savefig(f'{self.path}/results/just_test{ticker}.png')
+        plt.close()
+
     def plot_overfitting_graph(
             self,
             train_loss,
@@ -191,7 +201,19 @@ class CreateGraphs:
 
         plt.figure(figsize=(20, 10))
         plt.title(f'{model} of {ticker} with mse {mse}')
-        plt.plot(range(0, len(test_set)), test_set, color='blue', label='Original Data')
-        plt.plot(range(0, len(predictions)), predictions, color='orange', label='Prediction')
+        plt.plot(
+            range(
+                0,
+                len(test_set)),
+            test_set,
+            color='blue',
+            label='Original Data')
+        plt.plot(
+            range(
+                0,
+                len(predictions)),
+            predictions,
+            color='orange',
+            label='Prediction')
         plt.legend()
         plt.savefig(f'{self.path}/results/{ticker}_{model}.png')
