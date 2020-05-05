@@ -72,7 +72,7 @@ arima = {
 }
 
 # models = [arima]
-models = [random_forest, xgboost, feed_forward]
+models = [xgboost, feed_forward]  # random_forest
 # models = [random_forest]
 # models = [xgboost]
 
