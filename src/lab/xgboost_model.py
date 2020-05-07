@@ -119,7 +119,7 @@ class XGBoost:
             if real_diff * prediction_diff > 0:
                 ratio += 1
 
-        return ratio / len(true_values) - 1
+        return ratio / (len(true_values) - 1)
 
     def run(self, train, val, test, model_parameters):
 
@@ -127,7 +127,7 @@ class XGBoost:
         best_parameters = {}
         percenatge_of_guess_in_trend = 0
         best_prediction = 0
-        true_values = None
+        true_values_list = None
         there_is_a_best_prediction = False
 
         for min_child_weight in model_parameters.get('parameters').get('min_child_weight'):
@@ -157,8 +157,7 @@ class XGBoost:
                                 predictions, true_values, there_is_prediction = self.__test(test, min_child_weight,
                                                                                             gamma, subsample,
                                                                                             colsample_bytree,
-                                                                                            n_estimators,
-                                                                                            max_depth)
+                                                                                            n_estimators, max_depth)
                                 if there_is_prediction:
                                     current_mse = mean_squared_error(true_values, predictions)
                                     if current_mse < mse:
@@ -176,4 +175,5 @@ class XGBoost:
                                         there_is_a_best_prediction = True
                                         if percenatge_of_guess_in_trend < 0:
                                             logger.error(f'best parameters {best_parameters}, have a NEGATIVE RATIO')
-        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values, there_is_a_best_prediction
+                                        true_values_list = true_values
+        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction

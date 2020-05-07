@@ -57,7 +57,7 @@ xgboost = {
 """
 xgboost = {
     'model': 'xgboost',
-    'training': True,
+    'training': False,
     'parameters': {
         'min_child_weight': [1, 5, 10],
         'gamma': [0.5, 1, 1.5, 2, 5],
@@ -68,14 +68,28 @@ xgboost = {
     }
 }
 
+xgboost = {
+    'model': 'xgboost',
+    'training': False,
+    'parameters': {
+        'min_child_weight': [1],
+        'gamma': [0.5],
+        'subsample': [0.6],
+        'colsample_bytree': [0.6],
+        'n_estimators': [5],
+        'max_depth': [3]
+    }
+}
+
 arima = {
     'model': 'Arima'
 }
 
 # models = [arima]
-models = [random_forest, xgboost]  # random_forest, feed_forward
+# models = [random_forest, xgboost]  # random_forest, feed_forward
 # models = [random_forest]
 # models = [xgboost]
+models = [xgboost]
 
 
 def main():
