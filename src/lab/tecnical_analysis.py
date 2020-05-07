@@ -43,6 +43,17 @@ class TechnicalIndicators:
         return data
 
     def __rsi(self, data):
+        delta = data['close'].diff().dropna()
+        window = 15
+        up_days = delta.copy()
+        up_days[delta <= 0] = 0.0
+        down_days = abs(delta.copy())
+        down_days[delta > 0] = 0.0
+        RS_up = up_days.rolling(window).mean()
+        RS_down = down_days.rolling(window).mean()
+        data['rsi'] = 100 - 100 / (1 + RS_up / RS_down)
+
+        """
 
         # short period
         delta = data['close'].diff().dropna()
@@ -80,6 +91,8 @@ class TechnicalIndicators:
                                                                          com=self.ma_long_period - 1,
                                                                          adjust=False)
         data['rsi_long'] = 100 - 100 / (1 + rs)
+
+        """
 
         return data
 

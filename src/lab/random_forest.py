@@ -20,7 +20,10 @@ class RandomForest:
 
     def __transform_data(self, dataset):
 
-        x = np.empty((0, 77))  # todo: set as parameter
+        first_element, second_element = dataset[0]
+        # print(first_element.shape[0]*first_element.shape[1])
+        # todo: set as parameter
+        x = np.empty((0, first_element.shape[0] * first_element.shape[1]))
         y = np.empty((0, 1))
         for pos, data in enumerate(dataset):
             x = np.vstack((x, data[0].flatten().reshape(1, -1)))
@@ -56,7 +59,9 @@ class RandomForest:
         mse_train = mean_squared_error(predicted_train, train_y)
 
         if abs(mse_validation - mse_train) < self.overfitting_threshold:
-            dump(model, f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
+            dump(
+                model,
+                f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
                 f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
 
         return mse_validation, mse_train
@@ -100,7 +105,8 @@ class RandomForest:
             predictions_test = trained_model.predict(test_x)
             there_is_prediction = True
         else:
-            logger.info('This model does not exist due to the overfitting threshold')
+            logger.info(
+                'This model does not exist due to the overfitting threshold')
             predictions_test, test_y = None, None
             there_is_prediction = False
         return predictions_test, test_y, there_is_prediction
@@ -156,10 +162,10 @@ class RandomForest:
                             else:
                                 mse_validation, mse_train = None, None
                             predictions, true_values, there_is_prediction = self.__test(
-                                test, min_samples_leaf, max_features, min_samples_split,
-                                n_estimators, max_depth)
+                                test, min_samples_leaf, max_features, min_samples_split, n_estimators, max_depth)
                             if there_is_prediction:
-                                current_mse = mean_squared_error(true_values, predictions)
+                                current_mse = mean_squared_error(
+                                    true_values, predictions)
                                 if current_mse < mse:
                                     best_parameters = {
                                         'min_samples_leaf': min_samples_leaf,
@@ -169,7 +175,8 @@ class RandomForest:
                                         'max_depth': max_depth
                                     }
                                     mse = current_mse
-                                    percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
+                                    percenatge_of_guess_in_trend = self.__get_trend(
+                                        true_values, predictions)
                                     best_prediction = predictions
                                     there_is_a_best_prediction = True
                                     true_values_list = true_values

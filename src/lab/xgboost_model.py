@@ -20,7 +20,8 @@ class XGBoost:
 
     def __transform_data(self, dataset):
 
-        x = np.empty((0, 77))  # todo: set as parameter
+        first_element, second_element = dataset[0]
+        x = np.empty((0, first_element.shape[0] * first_element.shape[1]))
         y = np.empty((0, 1))
         for pos, data in enumerate(dataset):
             x = np.vstack((x, data[0].flatten().reshape(1, -1)))

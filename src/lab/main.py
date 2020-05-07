@@ -30,7 +30,7 @@ random_forest = {
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
-
+"""
 random_forest = {
     'model': 'random_forest',
     'training': True,
@@ -41,7 +41,7 @@ random_forest = {
         'n_estimators': [200],
         'max_depth': [20]}
 }
-"""
+
 random_forest = {
     'model': 'random_forest',
     'training': True,
@@ -68,7 +68,7 @@ xgboost = {
 """
 xgboost = {
     'model': 'xgboost',
-    'training': False,
+    'training': True,
     'parameters': {
         'min_child_weight': [1, 5, 10],
         'gamma': [0.5, 1, 1.5, 2, 5],
@@ -78,7 +78,7 @@ xgboost = {
         'max_depth': [3, 4, 5, 7, 10, 15, 20]
     }
 }
-
+"""
 xgboost = {
     'model': 'xgboost',
     'training': False,
@@ -95,10 +95,10 @@ xgboost = {
 arima = {
     'model': 'Arima'
 }
-
+"""
 # models = [arima]
-# models = [random_forest, xgboost]  # random_forest, feed_forward
-models = [random_forest]
+models = [random_forest, xgboost]  # random_forest, feed_forward
+# models = [random_forest]
 # models = [xgboost]
 
 

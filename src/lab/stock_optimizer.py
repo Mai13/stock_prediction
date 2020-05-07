@@ -13,7 +13,12 @@ logger = logging.getLogger('Stock Optimizer')
 
 class StockOptimizer:
 
-    def __init__(self, number_of_tickers, models_and_parameters, overfitting_threshold, number_of_past_points):
+    def __init__(
+            self,
+            number_of_tickers,
+            models_and_parameters,
+            overfitting_threshold,
+            number_of_past_points):
         self.number_of_tickers = number_of_tickers
         self.data_loader = DataLoader()
         self.choose_ticker = ChooseTicker()
@@ -28,8 +33,8 @@ class StockOptimizer:
         logger.info('Select tickers')
         tickers = self.choose_ticker.random_tickers(self.number_of_tickers)
         logger.info(f'The selected tickers are {tickers}')
-        # for ticker in tickers:
-        for ticker in ['MCHP']:
+        for ticker in tickers:
+            # for ticker in ['MCHP']:
             logger.info(f'Starting with ticker {ticker}')
             data = self.data_loader.load(ticker)
             self.graph_maker.plot_adjusted_prices(ticker, data)
@@ -37,9 +42,11 @@ class StockOptimizer:
             logger.info(f'Technical analysis graphs')
             train, test, validation, train_graph, test_graph, validation_graph = self.data_loader.transform(
                 data, number_of_past_points=self.number_of_past_points)
-            self.graph_maker.plot_train_test_val(ticker, train_graph, test_graph, validation_graph)
+            self.graph_maker.plot_train_test_val(
+                ticker, train_graph, test_graph, validation_graph)
 
-            for position, model_name in enumerate([element.get('model') for element in self.models_and_parameters]):
+            for position, model_name in enumerate(
+                    [element.get('model') for element in self.models_and_parameters]):
 
                 if model_name == 'feed_forward_neural_net':
 
@@ -49,17 +56,25 @@ class StockOptimizer:
                         overfitting_threshold=self.overfitting_threshold,
                     )
                 if model_name == 'random_forest':
-                    model = RandomForest(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
+                    model = RandomForest(
+                        ticker=ticker, overfitting_threshold=self.overfitting_threshold)
                 if model_name == 'xgboost':
-                    model = XGBoost(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
+                    model = XGBoost(
+                        ticker=ticker,
+                        overfitting_threshold=self.overfitting_threshold)
                 if model_name == 'Arima':
-                    model = Arima(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
+                    model = Arima(
+                        ticker=ticker,
+                        overfitting_threshold=self.overfitting_threshold)
                 best_parameters, mse, trend_ratio, prediction, true_values, there_is_a_best_prediction = model.run(
                     train=train, val=validation, test=test[::-1], model_parameters=self.models_and_parameters[position])
-                logger.info(f'The best scenario for a {model_name} is {best_parameters}, mse: {mse},'
-                            f' ratio of trend {trend_ratio*100}')
+                logger.info(
+                    f'The best scenario for a {model_name} is {best_parameters}, mse: {mse},'
+                    f' ratio of trend {trend_ratio*100}')
                 if there_is_a_best_prediction:
-                    self.graph_maker.plot_test_results(true_values, prediction, ticker, mse, model_name)
+                    self.graph_maker.plot_test_results(
+                        true_values, prediction, ticker, mse, model_name)
                 else:
-                    logger.info(f'No model could be fitted for {model_name} due to the '
-                                f'overfitting threshold of {self.overfitting_threshold}')
+                    logger.info(
+                        f'No model could be fitted for {model_name} due to the '
+                        f'overfitting threshold of {self.overfitting_threshold}')
