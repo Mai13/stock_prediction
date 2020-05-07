@@ -88,6 +88,10 @@ class CreateGraphs:
             test_dates = np.append(test_dates, X[-1])
             test_closing_prices = np.append(test_closing_prices, y)
 
+        # print(test_closing_prices[0], test_closing_prices[1])
+        # print(test_dates[0], test_dates[1])
+        # print(test_dates[0] > test_dates[1])
+
         val_dates = np.empty((0, 1))
         val_closing_prices = np.empty((0, 1))
 

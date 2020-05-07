@@ -55,7 +55,7 @@ class StockOptimizer:
                 if model_name == 'Arima':
                     model = Arima(ticker=ticker, overfitting_threshold=self.overfitting_threshold)
                 best_parameters, mse, trend_ratio, prediction, true_values, there_is_a_best_prediction = model.run(
-                    train=train, val=validation, test=test, model_parameters=self.models_and_parameters[position])
+                    train=train, val=validation, test=test[::-1], model_parameters=self.models_and_parameters[position])
                 logger.info(f'The best scenario for a {model_name} is {best_parameters}, mse: {mse},'
                             f' ratio of trend {trend_ratio*100}')
                 if there_is_a_best_prediction:
