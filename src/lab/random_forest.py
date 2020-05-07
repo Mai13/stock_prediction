@@ -125,7 +125,7 @@ class RandomForest:
         best_parameters = {}
         percenatge_of_guess_in_trend = 0
         best_prediction = 0
-        true_values = None
+        true_values_list = []
         there_is_a_best_prediction = False
 
         for min_samples_leaf in model_parameters.get(
@@ -172,5 +172,7 @@ class RandomForest:
                                     percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
                                     best_prediction = predictions
                                     there_is_a_best_prediction = True
+                                    true_values_list = true_values
+                                    logger.info(f'best test mse: {mse}')
 
-        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values, there_is_a_best_prediction
+        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction

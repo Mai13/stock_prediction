@@ -30,6 +30,17 @@ random_forest = {
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
+
+random_forest = {
+    'model': 'random_forest',
+    'training': True,
+    'parameters': {
+        'min_samples_leaf': [1],
+        'max_features': ['auto'],
+        'min_samples_split': [2],
+        'n_estimators': [200],
+        'max_depth': [20]}
+}
 """
 random_forest = {
     'model': 'random_forest',
@@ -87,9 +98,8 @@ arima = {
 
 # models = [arima]
 # models = [random_forest, xgboost]  # random_forest, feed_forward
-# models = [random_forest]
+models = [random_forest]
 # models = [xgboost]
-models = [xgboost]
 
 
 def main():

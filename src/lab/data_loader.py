@@ -34,11 +34,10 @@ class DataLoader:
             transformed_data_for_graphs.append([data_array[position: position + number_of_past_points, 0].astype(
                 float), float(data_array[position - 1, 2])])
 
-        test_and_val, train = train_test_split(transformed_data[::-1], test_size=0.7, random_state=1, shuffle=False)
+        test_and_val, train = train_test_split(transformed_data, test_size=0.7, random_state=1, shuffle=False)
         test, validation = train_test_split(test_and_val, test_size=0.5, random_state=1, shuffle=False)
-        test_and_val_graph, train_graph = train_test_split(transformed_data_for_graphs[::-1], test_size=0.7, random_state=1, shuffle=False)
+        test_and_val_graph, train_graph = train_test_split(transformed_data_for_graphs, test_size=0.7, random_state=1, shuffle=False)
         test_graph, validation_graph = train_test_split(test_and_val_graph, test_size=0.5, random_state=1, shuffle=False)
-
         return train, test, validation, train_graph, test_graph, validation_graph
 
     def __scale(self, data):
@@ -53,7 +52,6 @@ class DataLoader:
         plt.savefig(f'{self.path}/results/{name}.png')
         plt.close()
 
-    # Todo: delete all the tickers that we wont be using
     def transform(self, adjusted_data, number_of_past_points):
         adjusted_data.date = [int(one_date.strftime("%s"))
                               for one_date in adjusted_data.date]
