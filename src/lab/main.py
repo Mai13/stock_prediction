@@ -5,8 +5,8 @@ import pathlib
 
 path = pathlib.Path(__file__).parent.absolute()
 logger = create_logger(f'{path.parent}/results', 'INFO')
-overfitting_threshold = 0.1  # 0.01, 0.05, 0.1, 0.5
-number_of_past_points = 7  # 1, 15
+overfitting_threshold = 0.05  # 0.01, 0.05, 0.1, 0.5
+number_of_past_points = 15  # 1, 15
 # merece la pena poner number of steps ahead
 
 feed_forward = {
@@ -23,14 +23,14 @@ random_forest = {
     'model': 'random_forest',
     'training': True,
     'parameters': {
-        'min_samples_leaf': [1, 2, 4],
+        'min_samples_leaf': [1, 2, 4, 8, 10],
         'max_features': ['auto', 'sqrt'],
-        'min_samples_split': [2, 5, 10],
+        'min_samples_split': [2, 5, 10, 20, 30],
         'n_estimators': [2, 5, 7, 10, 15, 20, 50, 100, 200, 400],
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
-"""
+
 random_forest = {
     'model': 'random_forest',
     'training': True,
@@ -41,7 +41,19 @@ random_forest = {
         'n_estimators': [200],
         'max_depth': [20]}
 }
+# trying to reduce ovefitting
 
+random_forest = {
+    'model': 'random_forest',
+    'training': True,
+    'parameters': {
+        'min_samples_leaf': [2, 4, 8, 10],
+        'max_features': ['auto'],
+        'min_samples_split': [2, 5, 10, 20],
+        'n_estimators': [2, 5, 7, 10, 15],
+        'max_depth': [3, 5, 7, 10, 15]}
+}
+"""
 random_forest = {
     'model': 'random_forest',
     'training': True,
@@ -65,7 +77,7 @@ xgboost = {
         'max_depth': [10]
     }
 }
-"""
+
 xgboost = {
     'model': 'xgboost',
     'training': True,
@@ -78,6 +90,7 @@ xgboost = {
         'max_depth': [3, 4, 5, 7, 10, 15, 20]
     }
 }
+"""
 """
 xgboost = {
     'model': 'xgboost',
@@ -96,9 +109,22 @@ arima = {
     'model': 'Arima'
 }
 """
+xgboost = {
+    'model': 'xgboost',
+    'training': False,
+    'parameters': {
+        'min_child_weight': [1],
+        'gamma': [0.5],
+        'subsample': [1.0],
+        'colsample_bytree': [1.0],
+        'n_estimators': [50],
+        'max_depth': [4]
+    }
+}
+
 # models = [arima]
-models = [random_forest, xgboost]  # random_forest, feed_forward
-# models = [random_forest]
+# models = [random_forest, xgboost]  # random_forest, feed_forward
+models = [random_forest]
 # models = [xgboost]
 
 

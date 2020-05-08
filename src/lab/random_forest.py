@@ -157,8 +157,8 @@ class RandomForest:
                                                                          min_samples_split=min_samples_split,
                                                                          n_estimators=n_estimators,
                                                                          max_depth=max_depth)
-                                logger.info(
-                                    f'MSE validation {mse_validation} and MSE train {mse_train}')
+                                logger.info(f'MSE validation {mse_validation} and MSE train {mse_train},'
+                                            f' diff {abs(mse_validation-mse_train)}')
                             else:
                                 mse_validation, mse_train = None, None
                             predictions, true_values, there_is_prediction = self.__test(
