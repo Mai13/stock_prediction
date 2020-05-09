@@ -5,7 +5,7 @@ import pathlib
 
 path = pathlib.Path(__file__).parent.absolute()
 logger = create_logger(f'{path.parent}/results', 'INFO')
-overfitting_threshold = 0.05  # 0.01, 0.05, 0.1, 0.5
+overfitting_threshold = 1000  # 0.01, 0.05, 0.1, 0.5 1000
 number_of_past_points = 15  # 1, 15
 # merece la pena poner number of steps ahead
 
@@ -49,9 +49,9 @@ random_forest = {
     'parameters': {
         'min_samples_leaf': [8],
         'max_features': ['auto'],
-        'min_samples_split': [2, 10, 20],
-        'n_estimators': [20, 50, 100],
-        'max_depth': [2, 3, 7]}
+        'min_samples_split': [2, 10, 17, 20, 25, 40, 50],
+        'n_estimators': [2, 4, 8, 20],
+        'max_depth': [2, 3, 7, 15, 30]}
 }
 """
 random_forest = {

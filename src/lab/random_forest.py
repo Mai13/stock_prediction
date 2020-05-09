@@ -128,6 +128,7 @@ class RandomForest:
     def run(self, train, val, test, model_parameters):
 
         mse = 1000
+        mse_val = 1000
         best_parameters = {}
         percenatge_of_guess_in_trend = 0
         best_prediction = 0
@@ -157,15 +158,18 @@ class RandomForest:
                                                                          min_samples_split=min_samples_split,
                                                                          n_estimators=n_estimators,
                                                                          max_depth=max_depth)
-                                logger.info(f'MSE validation {mse_validation} and MSE train {mse_train},'
-                                            f' diff {abs(mse_validation-mse_train)}')
+                                logger.info(
+                                    f'MSE validation {mse_validation} and MSE train {mse_train},'
+                                    f' diff {abs(mse_validation-mse_train)}')
                             else:
                                 mse_validation, mse_train = None, None
                             predictions, true_values, there_is_prediction = self.__test(
                                 test, min_samples_leaf, max_features, min_samples_split, n_estimators, max_depth)
+                            """
                             if there_is_prediction:
                                 current_mse = mean_squared_error(
                                     true_values, predictions)
+                                logger.info(f'test MSE: {mse}, MSE validation {mse_validation}, MSE train {mse_train}')
                                 if current_mse < mse:
                                     best_parameters = {
                                         'min_samples_leaf': min_samples_leaf,
@@ -180,6 +184,29 @@ class RandomForest:
                                     best_prediction = predictions
                                     there_is_a_best_prediction = True
                                     true_values_list = true_values
-                                    logger.info(f'best test mse: {mse}')
+                                    logger.info(f'BEST test mse: {mse}')
+
+                            """
+                            if there_is_prediction:
+                                current_mse = mean_squared_error(
+                                    true_values, predictions)
+                                logger.info(
+                                    f'test MSE: {mse}, MSE validation {mse_validation}, MSE train {mse_train}')
+                                if mse_validation < mse_val:
+                                    best_parameters = {
+                                        'min_samples_leaf': min_samples_leaf,
+                                        'max_features': max_features,
+                                        'min_samples_split': min_samples_split,
+                                        'n_estimators': n_estimators,
+                                        'max_depth': max_depth
+                                    }
+                                    mse_val = mse_validation
+                                    percenatge_of_guess_in_trend = self.__get_trend(
+                                        true_values, predictions)
+                                    best_prediction = predictions
+                                    there_is_a_best_prediction = True
+                                    true_values_list = true_values
+                                    logger.info(
+                                        f'BEST test mse: {mse}, val mse {mse_validation}')
 
         return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction
