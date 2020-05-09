@@ -47,11 +47,11 @@ random_forest = {
     'model': 'random_forest',
     'training': True,
     'parameters': {
-        'min_samples_leaf': [2, 4, 8, 10],
+        'min_samples_leaf': [8],
         'max_features': ['auto'],
-        'min_samples_split': [2, 5, 10, 20],
-        'n_estimators': [2, 5, 7, 10, 15],
-        'max_depth': [3, 5, 7, 10, 15]}
+        'min_samples_split': [2, 10, 20],
+        'n_estimators': [20, 50, 100],
+        'max_depth': [2, 3, 7]}
 }
 """
 random_forest = {
@@ -146,5 +146,4 @@ if __name__ == '__main__':
         main()
     except Exception as e:
         track = traceback.format_exc()
-        logger.error(
-            f"There was an error while executing the promgram {track}")
+        logger.error(f"There was an error while executing the promgram {track}")

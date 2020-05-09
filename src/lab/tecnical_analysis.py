@@ -44,14 +44,24 @@ class TechnicalIndicators:
 
     def __rsi(self, data):
         delta = data['close'].diff().dropna()
-        window = 15
+        window = self.ma_short_period
         up_days = delta.copy()
         up_days[delta <= 0] = 0.0
         down_days = abs(delta.copy())
         down_days[delta > 0] = 0.0
         RS_up = up_days.rolling(window).mean()
         RS_down = down_days.rolling(window).mean()
-        data['rsi'] = 100 - 100 / (1 + RS_up / RS_down)
+        data['rsi_short_period'] = 100 - 100 / (1 + RS_up / RS_down)
+
+        delta = data['close'].diff().dropna()
+        window = self.ma_long_period
+        up_days = delta.copy()
+        up_days[delta <= 0] = 0.0
+        down_days = abs(delta.copy())
+        down_days[delta > 0] = 0.0
+        RS_up = up_days.rolling(window).mean()
+        RS_down = down_days.rolling(window).mean()
+        data['rsi_long_period'] = 100 - 100 / (1 + RS_up / RS_down)
 
         """
 
@@ -102,6 +112,6 @@ class TechnicalIndicators:
         data = self.__exponential_moving_average(data)
         data = self.__macd(data)
         data = self.__bollinger_bands(data)
-        # data = self.__rsi(data) # TODO: This needs to be calculetd right
+        data = self.__rsi(data)
         # there is some pandas problem
         return data
