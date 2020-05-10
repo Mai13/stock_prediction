@@ -190,8 +190,7 @@ class RandomForest:
                             if there_is_prediction:
                                 current_mse = mean_squared_error(
                                     true_values, predictions)
-                                logger.info(
-                                    f'test MSE: {mse}, MSE validation {mse_validation}, MSE train {mse_train}')
+                                logger.info(f'test MSE: {current_mse}, MSE validation {mse_validation}, MSE train {mse_train}')
                                 if mse_validation < mse_val:
                                     best_parameters = {
                                         'min_samples_leaf': min_samples_leaf,
@@ -206,7 +205,7 @@ class RandomForest:
                                     best_prediction = predictions
                                     there_is_a_best_prediction = True
                                     true_values_list = true_values
-                                    logger.info(
-                                        f'BEST test mse: {mse}, val mse {mse_validation}')
+                                    logger.info(f'BEST test mse: {current_mse}, val mse {mse_val}')
+                                    mse = current_mse
 
         return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction
