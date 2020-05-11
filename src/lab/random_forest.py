@@ -21,8 +21,6 @@ class RandomForest:
     def __transform_data(self, dataset):
 
         first_element, second_element = dataset[0]
-        # print(first_element.shape[0]*first_element.shape[1])
-        # todo: set as parameter
         x = np.empty((0, first_element.shape[0] * first_element.shape[1]))
         y = np.empty((0, 1))
         for pos, data in enumerate(dataset):
@@ -40,6 +38,7 @@ class RandomForest:
             n_estimators,
             max_depth):
 
+        is_overfitted = True
         train_x, train_y = self.__transform_data(train)
         validation_x, validation_y = self.__transform_data(validation)
 
@@ -59,12 +58,9 @@ class RandomForest:
         mse_train = mean_squared_error(predicted_train, train_y)
 
         if abs(mse_validation - mse_train) < self.overfitting_threshold:
-            dump(
-                model,
-                f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
-                f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
+            is_overfitted = False
 
-        return mse_validation, mse_train
+        return mse_validation, mse_train, is_overfitted, model
 
     def __load_checkpoint(
             self,
@@ -135,58 +131,44 @@ class RandomForest:
         true_values_list = []
         there_is_a_best_prediction = False
 
-        for min_samples_leaf in model_parameters.get(
-                'parameters').get('min_samples_leaf'):
-            for max_features in model_parameters.get(
-                    'parameters').get('max_features'):
-                for min_samples_split in model_parameters.get(
-                        'parameters').get('min_samples_split'):
-                    for n_estimators in model_parameters.get(
-                            'parameters').get('n_estimators'):
-                        for max_depth in model_parameters.get(
-                                'parameters').get('max_depth'):
+        for min_samples_leaf in model_parameters.get('parameters').get('min_samples_leaf'):
+            for max_features in model_parameters.get('parameters').get('max_features'):
+                for min_samples_split in model_parameters.get('parameters').get('min_samples_split'):
+                    for n_estimators in model_parameters.get('parameters').get('n_estimators'):
+                        for max_depth in model_parameters.get('parameters').get('max_depth'):
                             if model_parameters.get('training'):
                                 logger.info(
                                     f'Starts Training: min_samples_leaf {min_samples_leaf},'
                                     f' max_features {max_features},'
                                     f' min_samples_split {min_samples_split}, n_estimators {n_estimators}'
                                     f'max_depth {max_depth}')
-                                mse_validation, mse_train = self.__train(train,
-                                                                         val,
-                                                                         min_samples_leaf=min_samples_leaf,
-                                                                         max_features=max_features,
-                                                                         min_samples_split=min_samples_split,
-                                                                         n_estimators=n_estimators,
-                                                                         max_depth=max_depth)
+                                mse_validation, mse_train, is_overfitted, model = self.__train(train,
+                                                                                         val,
+                                                                                         min_samples_leaf=min_samples_leaf,
+                                                                                         max_features=max_features,
+                                                                                         min_samples_split=min_samples_split,
+                                                                                         n_estimators=n_estimators,
+                                                                                         max_depth=max_depth)
                                 logger.info(
                                     f'MSE validation {mse_validation} and MSE train {mse_train},'
                                     f' diff {abs(mse_validation-mse_train)}')
+                                if not is_overfitted:
+                                    if mse_validation < mse_val:
+                                        best_parameters = {
+                                            'min_samples_leaf': min_samples_leaf,
+                                            'max_features': max_features,
+                                            'min_samples_split': min_samples_split,
+                                            'n_estimators': n_estimators,
+                                            'max_depth': max_depth
+                                        }
+                                        dump(model, f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
+                                             f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
+
                             else:
                                 mse_validation, mse_train = None, None
+
                             predictions, true_values, there_is_prediction = self.__test(
                                 test, min_samples_leaf, max_features, min_samples_split, n_estimators, max_depth)
-                            """
-                            if there_is_prediction:
-                                current_mse = mean_squared_error(
-                                    true_values, predictions)
-                                logger.info(f'test MSE: {mse}, MSE validation {mse_validation}, MSE train {mse_train}')
-                                if current_mse < mse:
-                                    best_parameters = {
-                                        'min_samples_leaf': min_samples_leaf,
-                                        'max_features': max_features,
-                                        'min_samples_split': min_samples_split,
-                                        'n_estimators': n_estimators,
-                                        'max_depth': max_depth
-                                    }
-                                    mse = current_mse
-                                    percenatge_of_guess_in_trend = self.__get_trend(
-                                        true_values, predictions)
-                                    best_prediction = predictions
-                                    there_is_a_best_prediction = True
-                                    true_values_list = true_values
-                                    logger.info(f'BEST test mse: {mse}')
-
-                            """
                             if there_is_prediction:
                                 current_mse = mean_squared_error(
                                     true_values, predictions)
@@ -207,5 +189,10 @@ class RandomForest:
                                     true_values_list = true_values
                                     logger.info(f'BEST test mse: {current_mse}, val mse {mse_val}')
                                     mse = current_mse
+
+                                    """
+                                    dump(model, f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
+                                        f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
+                                    """
 
         return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction
