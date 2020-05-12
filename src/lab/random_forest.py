@@ -178,6 +178,5 @@ class RandomForest:
             percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
 
         else:
-            logger.ERROR(f'Best models Model file is missing')
-
+            logger.error(f'Best models Model file is missing')
         return best_parameters, current_mse, percenatge_of_guess_in_trend, predictions, true_values, there_is_prediction

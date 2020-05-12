@@ -30,7 +30,7 @@ random_forest = {
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
-
+"""
 random_forest = {
     'model': 'random_forest',
     'training': True,
@@ -41,7 +41,7 @@ random_forest = {
         'n_estimators': [200],
         'max_depth': [20]}
 }
-"""
+
 # trying to reduce ovefitting
 
 random_forest = {
@@ -112,7 +112,7 @@ arima = {
 """
 xgboost = {
     'model': 'xgboost',
-    'training': False,
+    'training': True,
     'parameters': {
         'min_child_weight': [1],
         'gamma': [0.5],
@@ -125,8 +125,8 @@ xgboost = {
 
 # models = [arima]
 # models = [random_forest, xgboost]  # random_forest, feed_forward
-models = [random_forest]
-# models = [xgboost]
+# models = [random_forest]
+models = [xgboost]
 
 
 def main():

@@ -5,6 +5,7 @@ import logging
 from joblib import dump, load
 import pathlib
 import os
+import pickle
 
 logger = logging.getLogger('XGBoost')
 
@@ -40,11 +41,16 @@ class XGBoost:
             n_estimators,
             max_depth):
 
+        is_overfitted = True
         train_x, train_y = self.__transform_data(train)
         validation_x, validation_y = self.__transform_data(validation)
 
-        model = xgb.XGBRegressor(min_child_weight=min_child_weight, gamma=gamma, subsample=subsample,
-                                 colsample_bytree=colsample_bytree, n_estimators=n_estimators, max_depth=max_depth)
+        model = xgb.XGBRegressor(min_child_weight=min_child_weight,
+                                 gamma=gamma,
+                                 subsample=subsample,
+                                 colsample_bytree=colsample_bytree,
+                                 n_estimators=n_estimators,
+                                 max_depth=max_depth)
 
         model.fit(train_x, train_y.flatten())
 
@@ -55,11 +61,9 @@ class XGBoost:
         mse_train = mean_squared_error(predicted_train, train_y)
 
         if abs(mse_validation - mse_train) < self.overfitting_threshold:
-            dump(model, f'{self.model_path}/ticker_{self.ticker}_min_child_weight_{min_child_weight}_gamma_{gamma}'
-                        f'_subsample_{subsample}_colsample_bytree_{colsample_bytree}_n_estimator_{n_estimators}'
-                        f'_max_depth_{max_depth}.joblib')
+            is_overfitted = False
 
-        return mse_validation, mse_train
+        return mse_validation, mse_train, is_overfitted, model
 
     def __load_checkpoint(
             self,
@@ -124,11 +128,7 @@ class XGBoost:
 
     def run(self, train, val, test, model_parameters):
 
-        mse = 1000
-        best_parameters = {}
-        percenatge_of_guess_in_trend = 0
-        best_prediction = 0
-        true_values_list = None
+        mse_val = 1000
         there_is_a_best_prediction = False
 
         for min_child_weight in model_parameters.get('parameters').get('min_child_weight'):
@@ -143,38 +143,47 @@ class XGBoost:
                                         f' gamma {gamma}, subsample {subsample}'
                                         f' colsample_bytree {colsample_bytree}, n_estimators {n_estimators}'
                                         f'max_depth {max_depth}')
-                                    mse_validation, mse_train = self.__train(train,
-                                                                             val,
-                                                                             min_child_weight=min_child_weight,
-                                                                             gamma=gamma,
-                                                                             subsample=subsample,
-                                                                             colsample_bytree=colsample_bytree,
-                                                                             n_estimators=n_estimators,
-                                                                             max_depth=max_depth)
+                                    mse_validation, mse_train, is_overfitted, model = self.__train(train,
+                                                                                                     val,
+                                                                                                     min_child_weight=min_child_weight,
+                                                                                                     gamma=gamma,
+                                                                                                     subsample=subsample,
+                                                                                                     colsample_bytree=colsample_bytree,
+                                                                                                     n_estimators=n_estimators,
+                                                                                                     max_depth=max_depth)
                                     logger.info(
-                                        f'MSE validation {mse_validation} and MSE train {mse_train}')
-                                else:
-                                    mse_validation, mse_train = None, None
-                                predictions, true_values, there_is_prediction = self.__test(test, min_child_weight,
-                                                                                            gamma, subsample,
-                                                                                            colsample_bytree,
-                                                                                            n_estimators, max_depth)
-                                if there_is_prediction:
-                                    current_mse = mean_squared_error(true_values, predictions)
-                                    if current_mse < mse:
-                                        best_parameters = {
-                                            'min_child_weight': min_child_weight,
-                                            'gamma': gamma,
-                                            'subsample': subsample,
-                                            'colsample_bytree': colsample_bytree,
-                                            'n_estimators': n_estimators,
-                                            'max_depth': max_depth
-                                        }
-                                        mse = current_mse
-                                        percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
-                                        best_prediction = predictions
-                                        there_is_a_best_prediction = True
-                                        if percenatge_of_guess_in_trend < 0:
-                                            logger.error(f'best parameters {best_parameters}, have a NEGATIVE RATIO')
-                                        true_values_list = true_values
-        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction
+                                        f'MSE validation {mse_validation} and MSE train {mse_train}'
+                                        f' diff {abs(mse_validation-mse_train)}')
+                                    if not is_overfitted:
+                                        if mse_validation < mse_val:
+                                            best_parameters = {
+                                                'min_child_weight': min_child_weight,
+                                                'gamma': gamma,
+                                                'subsample': subsample,
+                                                'colsample_bytree': colsample_bytree,
+                                                'n_estimators': n_estimators,
+                                                'max_depth': max_depth
+                                            }
+                                            dump(model, f'{self.model_path}/ticker_{self.ticker}_min_child_weight_'
+                                                        f'{min_child_weight}_gamma_{gamma}_subsample_{subsample}_'
+                                                        f'colsample_bytree_{colsample_bytree}_n_estimator_'
+                                                        f'{n_estimators}_max_depth_{max_depth}.joblib')
+                                            pickle.dump(best_parameters, open(f'{self.model_path}/ticker_{self.ticker}_{model_parameters.get("model")}_best_model.p', 'wb'))
+                                            there_is_a_best_prediction = True
+        if there_is_a_best_prediction:
+            best_parameters = pickle.load(open(f'{self.model_path}/ticker_{self.ticker}_{model_parameters.get("model")}_best_model.p', 'rb'))
+            predictions, true_values, there_is_prediction = self.__test(test, best_parameters.get('min_child_weight'),
+                                                                        best_parameters.get('gamma'),
+                                                                        best_parameters.get('subsample'),
+                                                                        best_parameters.get('colsample_bytree'),
+                                                                        best_parameters.get('n_estimators'),
+                                                                        best_parameters.get('max_depth'))
+            current_mse = mean_squared_error(true_values, predictions)
+            logger.info(f'Best {model_parameters.get("model")} for {self.ticker}'
+                        f' test mse: {current_mse},'
+                        f' validation mse: {model_parameters.get("mse_validation")},'
+                        f' train mse: {model_parameters.get("mse_train")}')
+            percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
+        else:
+            logger.ERROR(f'Best models Model file is missing')
+        return best_parameters, current_mse, percenatge_of_guess_in_trend, predictions, true_values, there_is_prediction
