@@ -30,7 +30,7 @@ random_forest = {
         'max_depth': [3, 5, 7, 10, 15, 20, 30, 60, 100]
     }
 }
-"""
+
 random_forest = {
     'model': 'random_forest',
     'training': True,
@@ -41,6 +41,7 @@ random_forest = {
         'n_estimators': [200],
         'max_depth': [20]}
 }
+"""
 # trying to reduce ovefitting
 
 random_forest = {

@@ -1,7 +1,3 @@
-import pandas as pd
-import numpy as np
-
-
 class TechnicalIndicators:
 
     def __init__(self):
@@ -63,47 +59,6 @@ class TechnicalIndicators:
         RS_down = down_days.rolling(window).mean()
         data['rsi_long_period'] = 100 - 100 / (1 + RS_up / RS_down)
 
-        """
-
-        # short period
-        delta = data['close'].diff().dropna()
-        u = delta * 0
-        d = u.copy()
-        u[delta > 0] = delta[delta > 0]
-        d[delta < 0] = -delta[delta < 0]
-        # first value is sum of avg gains
-        u[u.index[self.ma_short_period - 1]
-          ] = np.mean(u[:self.ma_short_period])
-        u = u.drop(u.index[:(self.ma_short_period - 1)])
-        # first value is sum of avg losses
-        d[d.index[self.ma_short_period - 1]
-          ] = np.mean(d[:self.ma_short_period])
-        d = d.drop(d.index[:(self.ma_short_period - 1)])
-        rs = u.ewm(com=self.ma_short_period - 1, adjust=False) / \
-            u.ewm(d, com=self.ma_short_period - 1, adjust=False)
-        data['rsi_short'] = 100 - 100 / (1 + rs)
-
-        # long period
-        delta = data['close'].diff().dropna()
-        u = delta * 0
-        d = u.copy()
-        u[delta > 0] = delta[delta > 0]
-        d[delta < 0] = -delta[delta < 0]
-        # first value is sum of avg gains
-        u[u.index[self.ma_long_period - 1]] = np.mean(u[:self.ma_long_period])
-        u = u.drop(u.index[:(self.ma_long_period - 1)])
-        # first value is sum of avg losses
-        d[d.index[self.ma_long_period - 1]] = np.mean(d[:self.ma_long_period])
-        d = d.drop(d.index[:(self.ma_long_period - 1)])
-        rs = pd.stats.moments.ewma(u,
-                                   com=self.ma_long_period - 1,
-                                   adjust=False) / pd.stats.moments.ewma(d,
-                                                                         com=self.ma_long_period - 1,
-                                                                         adjust=False)
-        data['rsi_long'] = 100 - 100 / (1 + rs)
-
-        """
-
         return data
 
     def calculate(self, data):
@@ -113,5 +68,4 @@ class TechnicalIndicators:
         data = self.__macd(data)
         data = self.__bollinger_bands(data)
         data = self.__rsi(data)
-        # there is some pandas problem
         return data

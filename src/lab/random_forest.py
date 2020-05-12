@@ -5,6 +5,7 @@ import logging
 from joblib import dump, load
 import pathlib
 import os
+import pickle
 
 logger = logging.getLogger('Random Forest')
 
@@ -123,12 +124,7 @@ class RandomForest:
 
     def run(self, train, val, test, model_parameters):
 
-        mse = 1000
         mse_val = 1000
-        best_parameters = {}
-        percenatge_of_guess_in_trend = 0
-        best_prediction = 0
-        true_values_list = []
         there_is_a_best_prediction = False
 
         for min_samples_leaf in model_parameters.get('parameters').get('min_samples_leaf'):
@@ -159,40 +155,29 @@ class RandomForest:
                                             'max_features': max_features,
                                             'min_samples_split': min_samples_split,
                                             'n_estimators': n_estimators,
-                                            'max_depth': max_depth
+                                            'max_depth': max_depth,
+                                            'mse_validation': mse_validation,
+                                            'mse_train': mse_train
                                         }
                                         dump(model, f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
                                              f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
+                                        pickle.dump(best_parameters, open(f'{self.model_path}/ticker_{self.ticker}_{model_parameters.get("model")}_best_model.p', 'wb'))
+                                        there_is_a_best_prediction = True
+        if there_is_a_best_prediction:
+            best_parameters = pickle.load(open(f'{self.model_path}/ticker_{self.ticker}_{model_parameters.get("model")}_best_model.p', 'rb'))
+            predictions, true_values, there_is_prediction = self.__test(test, best_parameters.get('min_samples_leaf'),
+                                                                        best_parameters.get('max_features'),
+                                                                        best_parameters.get('min_samples_split'),
+                                                                        best_parameters.get('n_estimators'),
+                                                                        best_parameters.get('max_depth'))
+            current_mse = mean_squared_error(true_values, predictions)
+            logger.info(f'Best {model_parameters.get("model")} for {self.ticker}'
+                        f' test mse: {current_mse},'
+                        f' validation mse: {model_parameters.get("mse_validation")},'
+                        f' train mse: {model_parameters.get("mse_train")}')
+            percenatge_of_guess_in_trend = self.__get_trend(true_values, predictions)
 
-                            else:
-                                mse_validation, mse_train = None, None
+        else:
+            logger.ERROR(f'Best models Model file is missing')
 
-                            predictions, true_values, there_is_prediction = self.__test(
-                                test, min_samples_leaf, max_features, min_samples_split, n_estimators, max_depth)
-                            if there_is_prediction:
-                                current_mse = mean_squared_error(
-                                    true_values, predictions)
-                                logger.info(f'test MSE: {current_mse}, MSE validation {mse_validation}, MSE train {mse_train}')
-                                if mse_validation < mse_val:
-                                    best_parameters = {
-                                        'min_samples_leaf': min_samples_leaf,
-                                        'max_features': max_features,
-                                        'min_samples_split': min_samples_split,
-                                        'n_estimators': n_estimators,
-                                        'max_depth': max_depth
-                                    }
-                                    mse_val = mse_validation
-                                    percenatge_of_guess_in_trend = self.__get_trend(
-                                        true_values, predictions)
-                                    best_prediction = predictions
-                                    there_is_a_best_prediction = True
-                                    true_values_list = true_values
-                                    logger.info(f'BEST test mse: {current_mse}, val mse {mse_val}')
-                                    mse = current_mse
-
-                                    """
-                                    dump(model, f'{self.model_path}/ticker_{self.ticker}_min_samples_leaf_{min_samples_leaf}_max_features_{max_features}'
-                                        f'_min_samples_split_{min_samples_split}_n_estimators_{n_estimators}_max_depth_{max_depth}.joblib')
-                                    """
-
-        return best_parameters, mse, percenatge_of_guess_in_trend, best_prediction, true_values_list, there_is_a_best_prediction
+        return best_parameters, current_mse, percenatge_of_guess_in_trend, predictions, true_values, there_is_prediction
