@@ -78,7 +78,7 @@ xgboost = {
         'max_depth': [10]
     }
 }
-
+"""
 xgboost = {
     'model': 'xgboost',
     'training': True,
@@ -91,7 +91,7 @@ xgboost = {
         'max_depth': [3, 4, 5, 7, 10, 15, 20]
     }
 }
-"""
+
 """
 xgboost = {
     'model': 'xgboost',
@@ -109,7 +109,7 @@ xgboost = {
 arima = {
     'model': 'Arima'
 }
-"""
+
 xgboost = {
     'model': 'xgboost',
     'training': True,
@@ -122,11 +122,11 @@ xgboost = {
         'max_depth': [4]
     }
 }
-
+"""
 # models = [arima]
-# models = [random_forest, xgboost]  # random_forest, feed_forward
+models = [random_forest, xgboost]  # random_forest, feed_forward
 # models = [random_forest]
-models = [xgboost]
+# models = [xgboost]
 
 
 def main():
