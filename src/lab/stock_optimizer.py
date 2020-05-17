@@ -6,6 +6,7 @@ from feed_forward_nn import FeedForwardNN
 from random_forest import RandomForest
 from xgboost_model import XGBoost
 from arima import Arima
+from regressors import Regressors
 import logging
 
 logger = logging.getLogger('Stock Optimizer')
@@ -64,6 +65,10 @@ class StockOptimizer:
                         overfitting_threshold=self.overfitting_threshold)
                 if model_name == 'Arima':
                     model = Arima(
+                        ticker=ticker,
+                        overfitting_threshold=self.overfitting_threshold)
+                if model_name == 'regressors':
+                    model = Regressors(
                         ticker=ticker,
                         overfitting_threshold=self.overfitting_threshold)
                 best_parameters, mse, trend_ratio, prediction, true_values, there_is_a_best_prediction = model.run(
