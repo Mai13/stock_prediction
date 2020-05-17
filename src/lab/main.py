@@ -122,11 +122,22 @@ xgboost = {
         'max_depth': [4]
     }
 }
+
 """
+
+regressor = {
+    'model': 'regressors',
+    'training': True,
+    'parameters': {
+        'feature_number': [2, 3, 4, 5, 6]
+    }
+}
+
 # models = [arima]
-models = [random_forest, xgboost]  # random_forest, feed_forward
+# models = [random_forest, xgboost]  # random_forest, feed_forward
 # models = [random_forest]
 # models = [xgboost]
+models = [regressor]
 
 
 def main():
