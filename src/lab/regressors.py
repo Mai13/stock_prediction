@@ -25,7 +25,7 @@ class Regressors:
         self.overfitting_threshold = overfitting_threshold
         self.estimators = [('OLS', LinearRegression()),
                            ('Theil-Sen', TheilSenRegressor(random_state=self.random_state)),
-                           ('RANSAC', RANSACRegressor(random_state=self.random_state)),
+                           ('RANSAC', RANSACRegressor(random_state=self.random_state, min_samples=2)),
                            ('HuberRegressor', HuberRegressor())]
 
     def __transform_data(self, dataset):
@@ -49,7 +49,8 @@ class Regressors:
         train_x, train_y = self.__transform_data(train)
         validation_x, validation_y = self.__transform_data(validation)
 
-        model = make_pipeline(PolynomialFeatures(feature_number), estimator)
+        # model = make_pipeline(PolynomialFeatures(feature_number), estimator)
+        model = estimator
 
         model.fit(train_x, train_y.flatten())
         predicted_val = model.predict(validation_x)
