@@ -23,10 +23,6 @@ class Regressors:
         self.model_path = f'{pathlib.Path(__file__).parent.parent.absolute()}/model'
         self.ticker = ticker
         self.overfitting_threshold = overfitting_threshold
-        self.estimators = [('OLS', LinearRegression()),
-                           ('Theil-Sen', TheilSenRegressor(random_state=self.random_state)),
-                           ('RANSAC', RANSACRegressor(random_state=self.random_state, min_samples=2)),
-                           ('HuberRegressor', HuberRegressor())]
 
     def __transform_data(self, dataset):
 
@@ -42,7 +38,6 @@ class Regressors:
             self,
             train,
             validation,
-            feature_number,
             estimator):
 
         is_overfitted = True
@@ -116,37 +111,26 @@ class Regressors:
         mse_val = 1000
         there_is_a_best_prediction = False
 
-        for feature_number in model_parameters.get('parameters').get('feature_number'):
-            for name, estimator in self.estimators:
-                if model_parameters.get('training'):
-                    logger.info(
-                        f'Starts Training: feature_number {feature_number},'
-                        f' estimator name {name}')
-                    mse_validation, mse_train, is_overfitted, model = self.__train(train,
-                                                                                   val,
-                                                                                   feature_number=feature_number,
-                                                                                   estimator=estimator)
-                    logger.info(
-                        f'MSE validation {mse_validation} and MSE train {mse_train},'
-                        f' diff {abs(mse_validation-mse_train)}')
-                    if not is_overfitted:
-                        if mse_validation < mse_val:
-                            best_parameters = {
-                                'feature_number': feature_number,
-                                'estimator': estimator,
-                                'estimator_name': name,
-                                'mse_validation': mse_validation,
-                                'mse_train': mse_train}
-                            dump(
-                                model,
-                                f'{self.model_path}/ticker_{self.ticker}_feature_number_{feature_number}'
-                                f'_estimator_{name}.joblib')
-                            pickle.dump(
-                                best_parameters,
-                                open(
-                                    f'{self.model_path}/ticker_{self.ticker}_{model_parameters.get("model")}_best_model.p',
-                                    'wb'))
-                            there_is_a_best_prediction = True
+        if model_parameters.get('training'):
+            logger.info(f'estimator name Linear Regressor')
+            mse_validation, mse_train, is_overfitted, model = self.__train(train,
+                                                                           val)
+            logger.info(f'MSE validation {mse_validation} and MSE train {mse_train}, diff {abs(mse_validation-mse_train)}')
+            if not is_overfitted:
+                if mse_validation < mse_val:
+                    best_parameters = {
+                        'estimator_name': 'Linear Regressor',
+                        'mse_validation': mse_validation,
+                        'mse_train': mse_train}
+                    dump(
+                        model,
+                        f'{self.model_path}/ticker_{self.ticker}_estimator_Linear_Regressor.joblib')
+                    pickle.dump(
+                        best_parameters,
+                        open(
+                            f'{self.model_path}/ticker_{self.ticker}_{model_parameters.get("model")}_best_model.p',
+                            'wb'))
+                    there_is_a_best_prediction = True
         if there_is_a_best_prediction:
             best_parameters = pickle.load(
                 open(
